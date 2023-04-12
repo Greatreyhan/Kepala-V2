@@ -46,7 +46,7 @@
 #define BATAS_DEPAN 						9.00
 
 //*************************** DEBUG MODE **********************************//
-#define TEST_HUSKY
+//#define TEST_HUSKY
 //#define TEST_DYNA
 //#define TEST_PING
 //#define TEST_COMMUNICATION
@@ -326,12 +326,17 @@ int main(void)
 	//*********************** COMMUNICATION CONFIG **************************//
 	#ifdef COMMUNICATION_ON
 	komunikasi_init(&huart2);
-//	rx_start();
-//	tx_move_steady();
-//	while(!feeding.statis){
-//		tx_statis(90,0,-90);
-//		HAL_Delay(1);
-//	}
+	rx_start();
+	tx_move_steady();
+	while(!feeding.statis){
+		tx_statis(70,35,-100); 
+		
+		HAL_Delay(1);
+	}
+	for(int i = 0; i <= 5; i++){
+		tx_statis(70,35,-100);
+		HAL_Delay(1000);
+	}
 	#endif
 	
 	//********************** Config For Huskylens *************************/
@@ -425,6 +430,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		tx_statis(90,0,-90);
 //		scp_deteksi_korban(1);
 //		blocks = husky_getBlocks();
 //		husky_distance = husky_distance_prediction();

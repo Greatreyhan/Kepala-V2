@@ -27,10 +27,34 @@ Project File Date:  04/11/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Kepala_Fuzzy'
+compiling main.c...
+..\..\Kepala_Fuzzy-main\Ping_driver.h(23): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala_Fuzzy-main\Komunikasi.h(87): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala_Fuzzy-main\Huskylens_driver.h(168): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala_Fuzzy-main\Dynamixel.h(67): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala_Fuzzy-main\PID_driver.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/main.c(977): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_safety_zone" 
+  	}
+../Core/Src/main.c(1045): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_korban" 
+  	}
+../Core/Src/main.c(1116): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_1" 
+  }
+../Core/Src/main.c(1124): warning:  #940-D: missing return statement at end of non-void function "Jalan_R2" 
+  }
+../Core/Src/main.c(1130): warning:  #940-D: missing return statement at end of non-void function "Jalan_R3" 
+  }
+../Core/Src/main.c(1150): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_1" 
+  }
+../Core/Src/main.c: 11 warnings, 0 errors
 linking...
-Program Size: Code=11618 RO-data=458 RW-data=36 ZI-data=2724  
+Program Size: Code=11722 RO-data=458 RW-data=36 ZI-data=2724  
 FromELF: creating hex file...
-"Kepala_Fuzzy\Kepala_Fuzzy.axf" - 0 Error(s), 0 Warning(s).
+"Kepala_Fuzzy\Kepala_Fuzzy.axf" - 0 Error(s), 11 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -54,7 +78,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.6.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>
