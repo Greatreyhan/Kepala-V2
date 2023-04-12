@@ -24,18 +24,25 @@
 #define ALGORITHM_COLOR_RECOGNITION 0x0004
 #define ALGORITHM_TAG_RECOGNITION 0x0005
 #define ALGORITHM_OBJECT_CLASSIFICATION 0x0006
-
+#define ALGORITHM_NOT_FOUND 0x0009
 // ---------------------------------- START FOR COMPETITION PURPOUSE ---------------------------------------
 #define VICTIM_HEIGHT 10
 
 typedef enum{
-	HOME_AREA = 0x0001U,
-	PILE_OF_WOOD_OBSTACLE = 0x0002U,
-	CLIMBING_OBSTACLE = 0x0003U,
-	ROOM_1_AREA = 0x0004U,
-	PYRAMID_OBSTACLE = 0x0005U,
-	ROOM_2_AREA = 0x0006U,
-	ERROR_DETECTION = 0x0009U
+	HOME = 0x00U,
+	R1 = 0x01U,
+	R2 = 0x02U,
+	R3 = 0x03U,
+	R4 = 0x04U,
+	R5 = 0x05U,
+	R6 = 0x06U,
+	R7 = 0x07U,
+	R8 = 0x08U,
+	R9 = 0x09U,
+	R10 = 0x0AU,
+	R11 = 0x0BU,
+	FINISH = 0x0CU,
+	ERROR_ROOM = 0x0F,
 }huskylens_area_identification_t;
 
 typedef enum{

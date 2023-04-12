@@ -70,6 +70,22 @@ bool tx_statis(int16_t pos_x, int16_t pos_y, int16_t pos_z){
 	else return false;
 }
 
+bool tx_capit(type_capit_t cmd){
+	uint8_t capit[16] = {0xA5, 0x5A, 0x08, cmd, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+	capit[15] = checksum_generator(capit, 16);
+		
+	if(HAL_UART_Transmit(huart, capit, 16, TIMEOUT) == HAL_OK) return true;
+	else return false;
+}
+
+bool tx_serok(type_serok_t cmd){
+	uint8_t serok[16] = {0xA5, 0x5A, 0x09, cmd, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+	serok[15] = checksum_generator(serok, 16);
+		
+	if(HAL_UART_Transmit(huart, serok, 16, TIMEOUT) == HAL_OK) return true;
+	else return false;
+}
+
 void rx_start(void){
 	HAL_UART_Receive_DMA(huart,rxbuf, 3);
 }
@@ -87,6 +103,8 @@ void rx_feedback(feedback_t* fed){
 		else if(rxbuf[2] == 0x05) fed->rotasi = true;
 		else if(rxbuf[2] == 0x06) fed->req = true;
 		else if(rxbuf[2] == 0x07) fed->statis = true;
+		else if(rxbuf[2] == 0x08) fed->capit = true;
+		else if(rxbuf[2] == 0x09) fed->serok = true;
 	}
 	HAL_UART_Receive_DMA(huart,rxbuf, 3);
 }
@@ -221,6 +239,28 @@ void rx_get(com_get_t* get){
 				
 				HAL_UART_Transmit(huart, txbuf, 3, TIMEOUT);
 				get->type = GET_STATIS;
+			}
+			
+			// Check for Capit
+			else if(rxbuf_get[i+2] == 0x08){
+				uint8_t txbuf[3] = {0xA5, 0x5A, 0x08};
+				
+				// Check command
+				if(rxbuf_get[i+3]) get->cmd = rxbuf_get[i+3];
+				
+				HAL_UART_Transmit(huart, txbuf, 3, TIMEOUT);
+				get->type = PLAY_CAPIT;
+			}
+			
+			// Check for Capit
+			else if(rxbuf_get[i+2] == 0x09){
+				uint8_t txbuf[3] = {0xA5, 0x5A, 0x09};
+				
+				// Check command
+				if(rxbuf_get[i+3]) get->move = rxbuf_get[i+3];
+				
+				HAL_UART_Transmit(huart, txbuf, 3, TIMEOUT);
+				get->type = PLAY_SEROK;
 			}
 			
 		}

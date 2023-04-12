@@ -11,7 +11,8 @@
 #include <stdbool.h>
 
 typedef enum{
-	JALAN_TANGGA = 0x01U,
+	JALA_NOT_FOUND = 0x00U,
+	JALAN_PECAH = 0x01U,
 	JALAN_KELERENG = 0x02U,
 	JALAN_BATU = 0x03U,
 	JALAN_NORMAL = 0x04U
@@ -25,6 +26,8 @@ typedef struct{
 	bool rotasi;
 	bool req;
 	bool statis;
+	bool capit;
+	bool serok;
 }feedback_t;
 
 typedef enum{
@@ -35,7 +38,20 @@ typedef enum{
 	MOVE_ROTASI = 0x05U,
 	SEND_REQ = 0x06U,
 	GET_STATIS = 0x07U,
+	PLAY_CAPIT = 0x08U,
+	PLAY_SEROK = 0x09U
 }type_jalan_t;
+
+typedef enum{
+	STANDBY = 0x01U,
+	CAPIT_START = 0x02U,
+	EVAKUASI = 0x03U
+}type_capit_t;
+
+typedef enum{
+	MOVE_DEPAN = 0x01U,
+	MOVE_BELAKANG = 0x02U
+}type_serok_t;
 
 typedef struct{
 	int16_t pos_x;
@@ -47,9 +63,11 @@ typedef struct{
 	int8_t time;
 	int8_t walkpoint;
 	int8_t mode;
+	type_serok_t move;
 	type_jalan_t type;
 	int8_t speed;
 	mode_jalan_t mode_jalan;
+	type_capit_t cmd;
 }com_get_t;
 
 void komunikasi_init(UART_HandleTypeDef* uart_handler);
@@ -64,4 +82,6 @@ void rx_feedback(feedback_t* fed);
 void rx_start_get(void);
 void rx_get(com_get_t* get);
 bool tx_statis(int16_t pos_x, int16_t pos_y, int16_t pos_z);
+bool tx_capit(type_capit_t cmd);
+bool tx_serok(type_serok_t cmd);
 #endif

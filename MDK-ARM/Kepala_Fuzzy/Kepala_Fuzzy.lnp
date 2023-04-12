@@ -5,7 +5,6 @@
 "kepala_fuzzy\komunikasi.o"
 "kepala_fuzzy\ping_driver.o"
 "kepala_fuzzy\huskylens_driver.o"
-"kepala_fuzzy\pid.o"
 "kepala_fuzzy\dynamixel.o"
 "kepala_fuzzy\main.o"
 "kepala_fuzzy\stm32f4xx_it.o"

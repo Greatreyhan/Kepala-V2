@@ -282,14 +282,20 @@ huskylens_status_t husky_saveScreenShoot(void){
 
 huskylens_area_identification_t husky_get_position(void){
 		huskylens_block_t block = husky_getBlocks();
-		if(block.id == 0x00001) return HOME_AREA;
-		else if(block.id == 0x0002) return PILE_OF_WOOD_OBSTACLE;
-		else if(block.id == 0x0003) return CLIMBING_OBSTACLE;
-		else if(block.id == 0x0004) return ROOM_1_AREA;
-		else if(block.id == 0x0005) return PYRAMID_OBSTACLE;
-		else if(block.id == 0x0006) return ROOM_2_AREA;
-		else return ERROR_DETECTION;
-	return ERROR_DETECTION;
+		if(block.id == 0x00001) return R1;
+		else if(block.id == 0x0002) return R2;
+		else if(block.id == 0x0003) return R3;
+		else if(block.id == 0x0004) return R4;
+		else if(block.id == 0x0005) return R5;
+		else if(block.id == 0x0006) return R6;
+		else if(block.id == 0x0007) return R7;
+		else if(block.id == 0x0008) return R8;
+		else if(block.id == 0x0009) return R9;
+		else if(block.id == 0x000A) return R10;
+		else if(block.id == 0x000B) return R11;
+		else if(block.id == 0x000C) return FINISH;
+		else return ERROR_ROOM;
+	return ERROR_ROOM;
 }
 
 huskylens_victim_detection_t husky_victim_position(void){
