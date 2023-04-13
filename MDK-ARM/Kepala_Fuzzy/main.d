@@ -40,4 +40,5 @@ kepala_fuzzy\main.o: ..\..\Kepala_Fuzzy-main\Huskylens_driver.h
 kepala_fuzzy\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 kepala_fuzzy\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 kepala_fuzzy\main.o: ..\..\Kepala_Fuzzy-main\Dynamixel.h
+kepala_fuzzy\main.o: ..\..\Kepala_Fuzzy-main\Fuzzy.h
 kepala_fuzzy\main.o: ..\..\Kepala_Fuzzy-main\PID_driver.h

@@ -69,8 +69,8 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x64205251)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x64205251)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x6025318C)
 F (..\Fuzzy.h)(0x64205251)()
-F (..\Komunikasi.c)(0x64356820)(--c99 -c --cpu Cortex-M4.fp.sp -D__EVAL -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\..\Kepala_Fuzzy-main-I.\RTE\_Kepala_Fuzzy-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include"-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include"-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o kepala_fuzzy\komunikasi.o --omf_browse kepala_fuzzy\komunikasi.crf --depend kepala_fuzzy\komunikasi.d)
-I (..\Komunikasi.h)(0x64356820)
+F (..\Komunikasi.c)(0x6436E11C)(--c99 -c --cpu Cortex-M4.fp.sp -D__EVAL -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\..\Kepala_Fuzzy-main-I.\RTE\_Kepala_Fuzzy-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include"-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include"-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o kepala_fuzzy\komunikasi.o --omf_browse kepala_fuzzy\komunikasi.crf --depend kepala_fuzzy\komunikasi.d)
+I (..\Komunikasi.h)(0x6436E112)
 I (../Core/Inc/main.h)(0x64205251)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x64205251)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x64205251)
@@ -103,7 +103,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h)(0x64205251)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x64205251)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x64205251)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x6025318C)
-F (..\Komunikasi.h)(0x64356820)()
+F (..\Komunikasi.h)(0x6436E112)()
 F (..\Ping_driver.c)(0x64205251)(--c99 -c --cpu Cortex-M4.fp.sp -D__EVAL -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\..\Kepala_Fuzzy-main-I.\RTE\_Kepala_Fuzzy-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include"-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include"-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o kepala_fuzzy\ping_driver.o --omf_browse kepala_fuzzy\ping_driver.crf --depend kepala_fuzzy\ping_driver.d)
 I (..\Ping_driver.h)(0x64205251)
 I (../Core/Inc/main.h)(0x64205251)
@@ -211,7 +211,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x64205251)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x64205251)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025318E)
 F (..\Dynamixel.h)(0x64205251)()
-F (../Core/Src/main.c)(0x6436C85B)(--c99 -c --cpu Cortex-M4.fp.sp -D__EVAL -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\..\Kepala_Fuzzy-main-I.\RTE\_Kepala_Fuzzy-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include"-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include"-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o kepala_fuzzy\main.o --omf_browse kepala_fuzzy\main.crf --depend kepala_fuzzy\main.d)
+F (../Core/Src/main.c)(0x6437FE56)(--c99 -c --cpu Cortex-M4.fp.sp -D__EVAL -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\..\Kepala_Fuzzy-main-I.\RTE\_Kepala_Fuzzy-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include"-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include"-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o kepala_fuzzy\main.o --omf_browse kepala_fuzzy\main.crf --depend kepala_fuzzy\main.d)
 I (../Core/Inc/main.h)(0x64205251)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x64205251)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x64205251)
@@ -246,12 +246,13 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x64205251)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60253184)
 I (..\..\Kepala_Fuzzy-main\Ping_driver.h)(0x64205251)
 I (..\..\Kepala_Fuzzy-main\DWT_Delay.h)(0x64205251)
-I (..\..\Kepala_Fuzzy-main\Komunikasi.h)(0x64356820)
+I (..\..\Kepala_Fuzzy-main\Komunikasi.h)(0x6436E112)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x6025318C)
 I (..\..\Kepala_Fuzzy-main\Huskylens_driver.h)(0x64356F1A)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025318E)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x60253188)
 I (..\..\Kepala_Fuzzy-main\Dynamixel.h)(0x64205251)
+I (..\..\Kepala_Fuzzy-main\Fuzzy.h)(0x64205251)
 I (..\..\Kepala_Fuzzy-main\PID_driver.h)(0x642F99A0)
 F (../Core/Src/stm32f4xx_it.c)(0x64205251)(--c99 -c --cpu Cortex-M4.fp.sp -D__EVAL -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\..\Kepala_Fuzzy-main-I.\RTE\_Kepala_Fuzzy-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include"-I"C:\Users\RYZEN PRO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include"-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o kepala_fuzzy\stm32f4xx_it.o --omf_browse kepala_fuzzy\stm32f4xx_it.crf --depend kepala_fuzzy\stm32f4xx_it.d)
 I (../Core/Inc/main.h)(0x64205251)

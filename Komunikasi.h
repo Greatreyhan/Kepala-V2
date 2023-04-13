@@ -45,7 +45,8 @@ typedef enum{
 typedef enum{
 	STANDBY = 0x01U,
 	CAPIT_START = 0x02U,
-	EVAKUASI = 0x03U
+	EVAKUASI = 0x03U,
+	LEPAS = 0x04U
 }type_capit_t;
 
 typedef enum{

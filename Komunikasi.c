@@ -252,7 +252,7 @@ void rx_get(com_get_t* get){
 				get->type = PLAY_CAPIT;
 			}
 			
-			// Check for Capit
+			// Check for Serok
 			else if(rxbuf_get[i+2] == 0x09){
 				uint8_t txbuf[3] = {0xA5, 0x5A, 0x09};
 				

@@ -61,7 +61,7 @@
 #define OUTPUT_BATAS_ATAS		10
 
 //*************************** MODE KALKULASI ********************************//
-//#define USE_FUZZY 				
+#define USE_FUZZY 				
 #define USE_PID						
 //#define USE_PID_FUZZY		
 
@@ -261,6 +261,7 @@ bool scp_deteksi_korban(uint8_t id);
 void scp_deteksi_arena(uint8_t id, uint16_t angle);
 void scp_mode_jalan(mode_jalan_t mode);
 bool scp_deteksi_safety_zone(uint8_t id);
+bool scp_deteksi_safety_zone_2(uint8_t id);
 void scp_pengangkatan_korban(void);
 void scp_penurunan_korban(void);
 
@@ -273,16 +274,15 @@ bool Jalan_R3(void);
 bool Jalan_R4(void);
 bool Penyelamatan_Korban_1(void);
 bool Jalan_R5(void);
+bool Penyelamatan_Korban_2(void);
 bool Pencarian_Korban_2(void);
-bool Transisi_R6(void);
 bool Jalan_R6(void);
 bool Pencarian_Korban_3(void);
-bool Penyelamatan_Korban_2(void);
+bool Penyelamatan_Korban_3(void);
 bool Pencarian_Korban_4(void);
-bool Penyesuaian_Tangga(void);
 bool Pendakian_Tangga(void);
 bool Penyelamatan_Korban_4(void);
-bool Penyelamatan_Korban_5(void);
+bool Pencarian_Korban_5(void);
 bool Penyesuaian_R10(void);
 bool Jalan_R11(void);
 bool Penyelamatan_Korban_5(void);
@@ -328,14 +328,14 @@ int main(void)
 	komunikasi_init(&huart2);
 	rx_start();
 	tx_move_steady();
-	while(!feeding.statis){
+//	while(!feeding.statis){
+//		tx_statis(70,35,-100); 
+//		
+//		HAL_Delay(10);
+//	}
+	for(int i=0; i < 10; i++){
 		tx_statis(70,35,-100); 
-		
-		HAL_Delay(1);
-	}
-	for(int i = 0; i <= 5; i++){
-		tx_statis(70,35,-100);
-		HAL_Delay(1000);
+		HAL_Delay(100);
 	}
 	#endif
 	
@@ -353,23 +353,23 @@ int main(void)
 	DWT_Delay_Init();
 	
 	// PING 2
-	FL.PING_PORT = GPIOE;
-	FL.PING_PIN = GPIO_PIN_6;
+	FL.PING_PORT = GPIOB;
+	FL.PING_PIN = GPIO_PIN_4;
 	// PING 1
-	BL.PING_PORT = GPIOE;
-	BL.PING_PIN = GPIO_PIN_5;
+	BL.PING_PORT = GPIOB;
+	BL.PING_PIN = GPIO_PIN_9;
 	// PING 3
-	FR.PING_PORT =GPIOB;
-	FR.PING_PIN = GPIO_PIN_9;
+	FR.PING_PORT =GPIOE;
+	FR.PING_PIN = GPIO_PIN_5;
 	// PING 6
-	BR.PING_PORT = GPIOB;
-	BR.PING_PIN = GPIO_PIN_4;
+	BR.PING_PORT = GPIOE;
+	BR.PING_PIN = GPIO_PIN_6;
 	// PING 5
 	FF.PING_PORT = GPIOB;
-	FF.PING_PIN = GPIO_PIN_5;
+	FF.PING_PIN = GPIO_PIN_3;
 	// PING 7
 	BB.PING_PORT = GPIOB;
-	BB.PING_PIN = GPIO_PIN_3;
+	BB.PING_PIN = GPIO_PIN_5;
 	// PING 4
 	PC.PING_PORT = GPIOB;
 	PC.PING_PIN = GPIO_PIN_8;
@@ -406,7 +406,7 @@ int main(void)
 	PIDController_Init(&pid_pk);
 	
 	// PID untuk Wall Follower
-	pid_wf.Kp = 1; 				pid_wf.Ki = 0; 				pid_wf.Kd = 1; 					pid_wf.tau = 0.02;
+	pid_wf.Kp = 3; 				pid_wf.Ki = 0; 				pid_wf.Kd = 1; 					pid_wf.tau = 0.02;
 	pid_wf.limMax = 20; 	pid_wf.limMin = -20; 	pid_wf.limMaxInt = 5; 	pid_wf.limMinInt = -5;
 	pid_wf.T_sample = SAMPLE_TIME_S;
 	PIDController_Init(&pid_wf);
@@ -430,11 +430,18 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		tx_statis(90,0,-90);
+//		tx_statis(90,0,-90);
 //		scp_deteksi_korban(1);
 //		blocks = husky_getBlocks();
 //		husky_distance = husky_distance_prediction();
 //		scp_deteksi_korban(1);
+		scp_wall_follower(STATE_KANAN);
+//		tx_move_jalan(20, 15, 40, 15, JALAN_NORMAL);
+//		HAL_Delay(1000);
+//		tx_move_rotasi(0, 0, 30, 30, 1, 10);
+//		HAL_Delay(1000);
+//		tx_move_jalan(0, -10, 30, 15, JALAN_NORMAL);
+//		scp_wall_stabilizer(STATE_KANAN);
 		
 		//************************* HUSKY TEST ***********************//
 		#ifdef TEST_HUSKY
@@ -737,13 +744,13 @@ void pid_run(uint8_t state_jalan, double input){
 		if((state_jalan == STATE_KANAN)&&(input > 0.0)){
 			for (float t = 0.0f; t <= 5; t += SAMPLE_TIME_S) {
 				PIDController_Update(&pid_wf, setpoint_wf, input);
-				tx_move_jalan(pid_wf.out, 15, 30, 15, JALAN_NORMAL);
+				tx_move_jalan(pid_wf.out, 15, 40, 15, JALAN_NORMAL);
 			}
 		}
 		else if((state_jalan == STATE_KIRI)&&(input > 0.0)){
 			for (float t = 0.0f; t <= 5; t += SAMPLE_TIME_S){
 				PIDController_Update(&pid_wf, setpoint_wf, input);
-				tx_move_jalan(pid_wf.out, 15, 30, 15, JALAN_NORMAL);
+				tx_move_jalan(pid_wf.out, 15, 40, 15, JALAN_NORMAL);
 			}
 		}
 }
@@ -975,6 +982,70 @@ bool scp_deteksi_safety_zone(uint8_t id){
 		}
 		#endif
 	}
+
+bool scp_deteksi_safety_zone_2(uint8_t id){
+
+	// Set ke Algoritma color detection
+	if(algorithm_type != ALGORITHM_COLOR_RECOGNITION){
+		status = husky_setAlgorithm(ALGORITHM_COLOR_RECOGNITION);
+		algorithm_type = ALGORITHM_COLOR_RECOGNITION;
+	}	
+	#ifdef HUSKY_ON
+		blocks = husky_getBlocks();
+		dyna_sudut = dyna_read_posisition(&ax);
+		if(blocks.id == id){
+			
+			#ifdef DYNA_ON
+			
+				#ifdef DETEKSI_SF_FUZZY
+				fuzzy_fuzfication_input(&husky_input_fuzzy, &husky_fuz_fic_input, blocks.X_center);
+				fuzzy_logic_rule(&husky_output_fuzzy, &husky_fuz_fic_input, &husky_defuz, FUZZY_MIN_TO_MAX);
+				husky_res = fuzzy_defuz(&husky_defuz,&husky_fuz_fic_input);
+				
+				if(husky_res >= 0){
+					dyna_set_moving_speed(&ax, 50, MOVING_CW);
+					dyna_set_goal_position(&ax, dyna_sudut-husky_res);
+				}
+				else if(husky_res < 0){
+					dyna_set_moving_speed(&ax, 50, MOVING_CCW);
+					dyna_set_goal_position(&ax, dyna_sudut-husky_res);
+				}
+				
+				// Send Message
+				if(dyna_sudut <= 1023){
+						tx_move_jalan(((511.5-dyna_sudut)/(1023/40))*(-1), -15, 30, 15, JALAN_NORMAL);
+				}
+				
+				#endif
+				
+				#ifdef DETEKSI_SF_PID
+				for (float t = 0.0f; t <= 5; t += SAMPLE_TIME_S) {
+
+					PIDController_Update(&pid_pk, setpoint_pk, blocks.X_center);
+					PIDController_Update(&pid_kf, setpoint_kf, 512-dyna_sudut);
+					if(pid_pk.out >= 0){
+						dyna_set_moving_speed(&ax, 50, MOVING_CW);
+						dyna_set_goal_position(&ax, dyna_sudut+pid_pk.out);
+					}
+					else if(pid_pk.out < 0){
+						dyna_set_moving_speed(&ax, 50, MOVING_CCW);
+						dyna_set_goal_position(&ax, dyna_sudut+pid_pk.out);
+					}
+					
+					if((155 <= blocks.X_center) && (blocks.X_center <= 165)) return true;
+					if(dyna_sudut <= 1023){
+						tx_move_jalan(pid_kf.out, -15, 30, 15, JALAN_NORMAL);
+					}
+				}
+				#endif
+			
+			#endif
+		}
+		if(dyna_sudut >= 1020){
+			dyna_scan(&ax, 0, 100,MOVING_CW);
+		}
+		#endif
+	}
 #endif
 #endif
 	
@@ -1139,7 +1210,7 @@ bool Penyelamatan_Korban_1(void){
 				tx_move_jalan(5, 15, 0, 15, JALAN_NORMAL);
 				dyna_calibrate(&ax);
 				dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
-				tx_capit(STANDBY);
+				tx_capit(LEPAS);
 				break;
 			}
 		}
@@ -1147,6 +1218,175 @@ bool Penyelamatan_Korban_1(void){
 	scp_wall_stabilizer(STATE_KANAN);
 	scp_wall_follower(STATE_KANAN);
 	
+}
+
+bool Jalan_R5(void){
+	while(true){
+		if(husky_get_position() >= R5){
+			dyna_calibrate(&ax);
+			dyna_set_goal_position(&ax,600);
+			if(scp_deteksi_korban(1)){
+			// Ambil Korban
+				tx_capit(STANDBY);
+				FLV = ping_read(FL);
+				BLV = ping_read(BL);
+				if((BLV +FLV)/2 <= 5){
+					dyna_calibrate(&ax);
+					dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
+					tx_capit(CAPIT_START);
+					break;
+				}			
+				else tx_move_jalan(0, 10, 30, 15, JALAN_KELERENG);
+			}
+			else scp_wall_follower(STATE_KANAN);
+		}
+	}
+}
+
+bool Penyelamatan_Korban_2(void){
+	while(true){
+		if(scp_deteksi_safety_zone_2(2)){
+			FFV = ping_read(FF);
+				if(FFV <= 5){
+					// Pembersihan koral
+					tx_serok(MOVE_DEPAN);
+					dyna_calibrate(&ax);
+					tx_capit(LEPAS);
+					break;
+				}
+		}
+	}
+}
+
+bool Jalan_R6(void){
+	while(true){
+		if(scp_deteksi_safety_zone_2(2)){
+			dyna_calibrate(&ax);
+			dyna_set_goal_position(&ax, 300);
+			if(scp_deteksi_korban(1)){
+				tx_capit(STANDBY);
+				FRV = ping_read(FR);
+				BRV = ping_read(BR);
+				if((BRV +FRV)/2 <= 5){
+					dyna_calibrate(&ax);
+					dyna_set_goal_position(&ax, 600);
+					tx_capit(CAPIT_START);
+					break;
+				}
+				else tx_move_jalan(0, 10, 30, 15, JALAN_KELERENG);
+			}
+			tx_capit(EVAKUASI);
+			dyna_calibrate(&ax);
+		}
+	}
+}
+
+bool Penyelamatan_Korban_3(void){
+	while(true){
+		if(scp_deteksi_safety_zone_2(2)){
+			FFV = ping_read(FF);
+				if(FFV <= 5){
+					// Pembersihan koral
+					tx_serok(MOVE_DEPAN);
+					dyna_calibrate(&ax);
+					tx_capit(LEPAS);
+					break;
+				}
+		}
+	}
+	dyna_calibrate(&ax);
+	dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
+}
+
+bool Pencarian_Korban_4(void){
+	while(true){
+		if(scp_deteksi_korban(1)){
+			tx_capit(STANDBY);
+			FFV = ping_read(FF);
+			if(FFV <= 5){
+				dyna_calibrate(&ax);
+				dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
+				tx_capit(CAPIT_START);
+				break;
+			}			
+			else scp_deteksi_korban(1);
+		}
+	}
+	while(!feeding.capit) HAL_Delay(10);
+	tx_capit(EVAKUASI);
+	dyna_calibrate(&ax);
+	dyna_set_goal_position(&ax,600);
+}
+
+bool Pendakian_Tangga(void){
+	FLV = ping_read(FL);
+	BLV = ping_read(BL);
+	if((BLV +FLV)/2 <= 5){
+		// State Depan
+		tx_move_translasi(-15, 0, 20, 10, 15);
+	}
+	else tx_move_translasi(-15, 0, 20, 10, 15);
+}
+
+bool Penyelamatan_Korban_4(void){
+	while(true){
+		if(scp_deteksi_safety_zone_2(2)){
+			FFV = ping_read(FF);
+				if(FFV <= 5){
+					// Pembersihan koral
+					tx_serok(MOVE_DEPAN);
+					dyna_calibrate(&ax);
+					dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
+					tx_capit(LEPAS);
+					break;
+				}
+		}
+	}
+}
+
+bool Pencarian_Korban_5(void){
+	while(true){
+		if(scp_deteksi_korban(1)){
+			tx_capit(STANDBY);
+			FFV = ping_read(FF);
+			if(FFV <= 5){
+				dyna_calibrate(&ax);
+				dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
+				tx_capit(CAPIT_START);
+				break;
+			}			
+			else scp_deteksi_korban(1);
+		}
+	}
+	while(!feeding.capit) HAL_Delay(10);
+	tx_capit(EVAKUASI);
+	dyna_calibrate(&ax);
+	dyna_set_goal_position(&ax,600);
+}
+
+bool Penyesuaian_R10(void){
+	FLV = ping_read(FL);
+	BLV = ping_read(BL);
+	if((BLV +FLV)/2 >= 8){
+		tx_move_jalan(0, 10, 30, 15, JALAN_KELERENG);
+	}
+	else tx_move_translasi(-15, 0, 20, 10, 15); 
+}
+
+bool Penyelamatan_Korban_5(void){
+	dyna_calibrate(&ax);
+	dyna_set_goal_position(&ax,300);
+	while(true){
+		if(scp_deteksi_safety_zone_2(2)){
+				FRV = ping_read(FR);
+				BRV = ping_read(BR);
+				if((BRV +FRV)/2 <= 5){
+					tx_capit(CAPIT_START);
+					break;
+				}
+				else tx_move_jalan(0, 10, 30, 15, JALAN_KELERENG);
+		}
+	}
 }
 /* USER CODE END 4 */
 
