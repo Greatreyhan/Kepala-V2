@@ -47,8 +47,8 @@ bool tx_move_jalan(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t speed, mo
 	else return false;
 }
 
-bool tx_move_translasi(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t time, int8_t walkpoint){
-	uint8_t translasi[16] = {0xA5, 0x5A, 0x04, ((pos_x >> 8) & 0xFF),(pos_x & 0xFF),((pos_y >> 8) & 0xFF),(pos_y & 0xFF), ((pos_z >> 8) & 0xFF),(pos_z & 0xFF), time, walkpoint, 0x00, 0x00, 0x00, 0x00, 0x00};
+bool tx_move_translasi(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t time, int8_t walkpoint, uint8_t skew_mode){
+	uint8_t translasi[16] = {0xA5, 0x5A, 0x04, ((pos_x >> 8) & 0xFF),(pos_x & 0xFF),((pos_y >> 8) & 0xFF),(pos_y & 0xFF), ((pos_z >> 8) & 0xFF),(pos_z & 0xFF), time, walkpoint, skew_mode, 0x00, 0x00, 0x00, 0x00};
 	translasi[15] = checksum_generator(translasi, 16);
 		
 	if(HAL_UART_Transmit(huart, translasi, 16, TIMEOUT) == HAL_OK) return true;

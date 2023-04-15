@@ -31,6 +31,14 @@ typedef struct{
 }feedback_t;
 
 typedef enum{
+	NO_SKEW = 0x00U,
+	MIRING_DEPAN = 0x01U,
+	MIRING_BELAKANG = 0x02U,
+	MIRING_KANAN = 0x03U,
+	MIRING_KIRI = 0x04U
+}type_skew_t;
+
+typedef enum{
 	PING = 0x01U,
 	MOVE_STEADY = 0x02U,
 	MOVE_JALAN = 0x03U,
@@ -69,6 +77,7 @@ typedef struct{
 	int8_t speed;
 	mode_jalan_t mode_jalan;
 	type_capit_t cmd;
+	type_skew_t skew_mode;
 }com_get_t;
 
 void komunikasi_init(UART_HandleTypeDef* uart_handler);
@@ -76,7 +85,7 @@ bool tx_ping(void);
 static uint8_t checksum_generator(uint8_t* arr, uint8_t size);
 bool tx_move_steady(void);
 bool tx_move_jalan(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t speed, mode_jalan_t mode, uint8_t langkah);
-bool tx_move_translasi(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t time, int8_t walkpoint);
+bool tx_move_translasi(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t time, int8_t walkpoint, uint8_t skew_mode);
 bool tx_move_rotasi(int16_t roll, int16_t pitch, int16_t yaw, int16_t pos_z, int8_t mode, int8_t speed, uint8_t langkah);
 void rx_start(void);
 void rx_feedback(feedback_t* fed);
