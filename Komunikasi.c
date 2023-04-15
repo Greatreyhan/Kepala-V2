@@ -181,6 +181,9 @@ void rx_get(com_get_t* get){
 				if(rxbuf_get[i+10] & 0x80) get->walkpoint =  (rxbuf_get[i+10]) - (256);
 				else get->walkpoint =  (rxbuf_get[i+10]);
 				
+				// Get Mode Skew
+				get->skew_mode = rxbuf_get[i+11];
+				
 				HAL_UART_Transmit(huart, txbuf, 3, TIMEOUT);
 				get->type = MOVE_TRANSLASI;
 			}

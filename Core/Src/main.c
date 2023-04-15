@@ -428,10 +428,10 @@ int main(void)
 //		blocks = husky_getBlocks();
 //		husky_distance = husky_distance_prediction();
 //		scp_deteksi_korban(1);
-//		scp_wall_follower(STATE_KANAN);
-		tx_move_jalan(20, 15, 40, 15, JALAN_NORMAL, 5);
-		tx_move_rotasi(0, 0, 30, 30, 1, 10, 5);
-		tx_move_jalan(0, -10, 30, 15, JALAN_NORMAL, 5);
+		scp_wall_follower(STATE_KANAN);
+//		tx_move_jalan(20, 15, 40, 15, JALAN_NORMAL, 5);
+//		tx_move_rotasi(0, 0, 30, 30, 1, 10, 5);
+//		tx_move_jalan(0, -10, 30, 15, JALAN_NORMAL, 5);
 //		scp_wall_stabilizer(STATE_KANAN);
 		#endif
 		//************************* HUSKY TEST ***********************//
