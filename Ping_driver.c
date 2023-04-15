@@ -48,7 +48,7 @@ double ping_read(Ping_t ping){
 		ping.duration = (ping.tickB-ping.tickA);
 		ping.distance = (ping.duration)/58/2;
 		
-		DWT_Delay_us(10);
+		DWT_Delay_us(100);
 		
 		return ping.distance;
 }

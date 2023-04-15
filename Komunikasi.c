@@ -39,8 +39,8 @@ bool tx_move_steady(void){
 	else return false;
 }
 
-bool tx_move_jalan(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t speed, mode_jalan_t mode){
-	uint8_t jalan[16] = {0xA5, 0x5A, 0x03, ((pos_x >> 8) & 0xFF),(pos_x & 0xFF),((pos_y >> 8) & 0xFF),(pos_y & 0xFF), ((pos_z >> 8) & 0xFF),(pos_z & 0xFF), speed, mode, 0x00, 0x00, 0x00, 0x00, 0x00};
+bool tx_move_jalan(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t speed, mode_jalan_t mode, uint8_t walkpoint){
+	uint8_t jalan[16] = {0xA5, 0x5A, 0x03, ((pos_x >> 8) & 0xFF),(pos_x & 0xFF),((pos_y >> 8) & 0xFF),(pos_y & 0xFF), ((pos_z >> 8) & 0xFF),(pos_z & 0xFF), speed, mode, walkpoint, 0x00, 0x00, 0x00, 0x00};
 	jalan[15] = checksum_generator(jalan, 16);
 		
 	if(HAL_UART_Transmit(huart, jalan, 16, TIMEOUT) == HAL_OK) return true;
@@ -54,8 +54,8 @@ bool tx_move_translasi(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t time,
 	if(HAL_UART_Transmit(huart, translasi, 16, TIMEOUT) == HAL_OK) return true;
 	else return false;
 }
-bool tx_move_rotasi(int16_t roll, int16_t pitch, int16_t yaw, int16_t pos_z, int8_t mode, int8_t speed){
-	uint8_t rotasi[16] = {0xA5, 0x5A, 0x05, ((roll >> 8) & 0xFF),(roll & 0xFF),((pitch >> 8) & 0xFF),(pitch & 0xFF),((yaw >> 8) & 0xFF),(yaw & 0xFF), ((pos_z >> 8) & 0xFF),(pos_z & 0xFF), mode, speed, 0x00, 0x00, 0x00};
+bool tx_move_rotasi(int16_t roll, int16_t pitch, int16_t yaw, int16_t pos_z, int8_t mode, int8_t speed, uint8_t walkpoint){
+	uint8_t rotasi[16] = {0xA5, 0x5A, 0x05, ((roll >> 8) & 0xFF),(roll & 0xFF),((pitch >> 8) & 0xFF),(pitch & 0xFF),((yaw >> 8) & 0xFF),(yaw & 0xFF), ((pos_z >> 8) & 0xFF),(pos_z & 0xFF), mode, speed, walkpoint, 0x00, 0x00};
 	rotasi[15] = checksum_generator(rotasi, 16);
 		
 	if(HAL_UART_Transmit(huart, rotasi, 16, TIMEOUT) == HAL_OK) return true;
@@ -150,6 +150,9 @@ void rx_get(com_get_t* get){
 				// Get Mode
 				get->mode_jalan = rxbuf_get[i+10];
 				
+				// Get Langkah Kaki
+				get->walkpoint = rxbuf_get[i+11];
+				
 				HAL_UART_Transmit(huart, txbuf, 3, TIMEOUT);
 				get->type = MOVE_JALAN;
 			}
@@ -208,6 +211,9 @@ void rx_get(com_get_t* get){
 				// Check negative value
 				if(rxbuf_get[i+12] & 0x80) get->speed =  (rxbuf_get[i+12])-(256);
 				else get->speed =  (rxbuf_get[i+12]);
+				
+				// Get Langkah Kaki
+				get->walkpoint = rxbuf_get[i+13];
 				
 				uint8_t txbuf[3] = {0xA5, 0x5A, 0x05};
 				HAL_UART_Transmit(huart, txbuf, 3, TIMEOUT);
