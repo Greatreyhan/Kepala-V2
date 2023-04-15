@@ -1314,9 +1314,9 @@ bool Pendakian_Tangga(void){
 	BLV = ping_read(BL);
 	if((BLV +FLV)/2 <= 5){
 		// State Depan
-		tx_move_translasi(-15, 0, 20, 10, 15, NO_SKEW);
+//		tx_move_translasi(-15, 0, 20, 10, 15, NO_SKEW);
 	}
-	else tx_move_translasi(-15, 0, 20, 10, 15, NO_SKEW);
+//	else tx_move_translasi(-15, 0, 20, 10, 15, NO_SKEW);
 }
 
 bool Penyelamatan_Korban_4(void){
@@ -1361,7 +1361,7 @@ bool Penyesuaian_R10(void){
 	if((BLV +FLV)/2 >= 8){
 		tx_move_jalan(0, 10, 30, 15, JALAN_KELERENG, 2);
 	}
-	else tx_move_translasi(-15, 0, 20, 10, 15, NO_SKEW); 
+//	else tx_move_translasi(-15, 0, 20, 10, 15, NO_SKEW); 
 }
 
 bool Penyelamatan_Korban_5(void){

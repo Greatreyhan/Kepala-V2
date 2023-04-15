@@ -47,8 +47,8 @@ bool tx_move_jalan(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t speed, mo
 	else return false;
 }
 
-bool tx_move_translasi(int16_t pos_x, int16_t pos_y, int16_t pos_z, int8_t time, int8_t walkpoint, uint8_t skew_mode){
-	uint8_t translasi[16] = {0xA5, 0x5A, 0x04, ((pos_x >> 8) & 0xFF),(pos_x & 0xFF),((pos_y >> 8) & 0xFF),(pos_y & 0xFF), ((pos_z >> 8) & 0xFF),(pos_z & 0xFF), time, walkpoint, skew_mode, 0x00, 0x00, 0x00, 0x00};
+bool tx_move_translasi(int8_t value, int8_t skew_mode, uint8_t time){
+	uint8_t translasi[16] = {0xA5, 0x5A, 0x04, value, skew_mode, time, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	translasi[15] = checksum_generator(translasi, 16);
 		
 	if(HAL_UART_Transmit(huart, translasi, 16, TIMEOUT) == HAL_OK) return true;
@@ -162,27 +162,14 @@ void rx_get(com_get_t* get){
 				uint8_t txbuf[3] = {0xA5, 0x5A, 0x04};
 				
 				// Check negative value
-				if((rxbuf_get[i+3] & 0x80)) get->pos_x = ((rxbuf_get[i+3] << 8) | rxbuf_get[i+4])-(65536);
-				else get->pos_x = (rxbuf_get[i+3] << 8) | rxbuf_get[i+4];
-				
-				// Check negative value
-				if(rxbuf_get[i+5] & 0x80) get->pos_y = ((rxbuf_get[i+5] << 8) | rxbuf_get[i+6])-(65536);
-				else get->pos_y = ((rxbuf_get[i+5] << 8) | rxbuf_get[i+6]);
-				
-				// Check negative value
-				if(rxbuf_get[i+7] & 0x80) get->pos_z = ((rxbuf_get[i+7] << 8) | rxbuf_get[i+8])-(65536);
-				else get->pos_z = (rxbuf_get[i+7] << 8) | rxbuf_get[i+8];
-				
-				// Check negative value
-				if(rxbuf_get[i+9] & 0x80) get->time =  (rxbuf_get[i+9]) - (256);
-				else get->time =  (rxbuf_get[i+9]);
-				
-				// Check negative value
-				if(rxbuf_get[i+10] & 0x80) get->walkpoint =  (rxbuf_get[i+10]) - (256);
-				else get->walkpoint =  (rxbuf_get[i+10]);
+				if(rxbuf_get[i+3] & 0x80) get->skew_value =  (rxbuf_get[i+3]) - (256);
+				else get->skew_value =  (rxbuf_get[i+3]);
 				
 				// Get Mode Skew
-				get->skew_mode = rxbuf_get[i+11];
+				get->skew_mode = rxbuf_get[i+4];
+				
+				// Check negative value
+				get->time =  (rxbuf_get[i+5]);
 				
 				HAL_UART_Transmit(huart, txbuf, 3, TIMEOUT);
 				get->type = MOVE_TRANSLASI;

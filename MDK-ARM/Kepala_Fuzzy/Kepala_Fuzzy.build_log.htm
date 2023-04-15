@@ -27,24 +27,58 @@ Project File Date:  04/11/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Kepala_Fuzzy'
-compiling Komunikasi.c...
-..\Komunikasi.h(97): warning:  #1-D: last line of file ends without a newline
+compiling main.c...
+..\..\Kepala_Fuzzy-main\Ping_driver.h(23): warning:  #1-D: last line of file ends without a newline
   #endif
-..\Komunikasi.c(151): warning:  #188-D: enumerated type mixed with another type
-  				get->mode_jalan = rxbuf_get[i+10];
-..\Komunikasi.c(185): warning:  #188-D: enumerated type mixed with another type
-  				get->skew_mode = rxbuf_get[i+11];
-..\Komunikasi.c(258): warning:  #188-D: enumerated type mixed with another type
-  				if(rxbuf_get[i+3]) get->cmd = rxbuf_get[i+3];
-..\Komunikasi.c(269): warning:  #188-D: enumerated type mixed with another type
-  				if(rxbuf_get[i+3]) get->move = rxbuf_get[i+3];
-..\Komunikasi.c(278): warning:  #1-D: last line of file ends without a newline
+..\..\Kepala_Fuzzy-main\Komunikasi.h(98): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala_Fuzzy-main\Huskylens_driver.h(168): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala_Fuzzy-main\Dynamixel.h(67): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala_Fuzzy-main\Fuzzy.h(50): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala_Fuzzy-main\PID_driver.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/main.c(975): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_safety_zone" 
+  	}
+../Core/Src/main.c(1039): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_safety_zone_2" 
+  	}
+../Core/Src/main.c(1107): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_korban" 
+  	}
+../Core/Src/main.c(1178): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_1" 
   }
-..\Komunikasi.c: 6 warnings, 0 errors
+../Core/Src/main.c(1186): warning:  #940-D: missing return statement at end of non-void function "Jalan_R2" 
+  }
+../Core/Src/main.c(1192): warning:  #940-D: missing return statement at end of non-void function "Jalan_R3" 
+  }
+../Core/Src/main.c(1212): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_1" 
+  }
+../Core/Src/main.c(1235): warning:  #940-D: missing return statement at end of non-void function "Jalan_R5" 
+  }
+../Core/Src/main.c(1250): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_2" 
+  }
+../Core/Src/main.c(1273): warning:  #940-D: missing return statement at end of non-void function "Jalan_R6" 
+  }
+../Core/Src/main.c(1290): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_3" 
+  }
+../Core/Src/main.c(1310): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_4" 
+  }
+../Core/Src/main.c(1320): warning:  #940-D: missing return statement at end of non-void function "Pendakian_Tangga" 
+  }
+../Core/Src/main.c(1336): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_4" 
+  }
+../Core/Src/main.c(1356): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_5" 
+  }
+../Core/Src/main.c(1365): warning:  #940-D: missing return statement at end of non-void function "Penyesuaian_R10" 
+  }
+../Core/Src/main.c(1381): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_5" 
+  }
+../Core/Src/main.c: 23 warnings, 0 errors
 linking...
 Program Size: Code=17698 RO-data=458 RW-data=152 ZI-data=2936  
 FromELF: creating hex file...
-"Kepala_Fuzzy\Kepala_Fuzzy.axf" - 0 Error(s), 6 Warning(s).
+"Kepala_Fuzzy\Kepala_Fuzzy.axf" - 0 Error(s), 23 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -68,7 +102,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>
