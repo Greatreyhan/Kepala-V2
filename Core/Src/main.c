@@ -27,8 +27,8 @@
 #define DETEKSI_KORBAN_PID
 //#define DETEKSI_KORBAN_FUZZY
 
-//#define WALL_FOLLOWER_PID
-#define WALL_FOLLOWER_FUZZY
+#define WALL_FOLLOWER_PID
+//#define WALL_FOLLOWER_FUZZY
 
 //#define USE_STABILIZE_FUZZY
 #define USE_STABILIZE_PID
@@ -48,18 +48,19 @@
 //*************************** DEBUG MODE **********************************//
 //#define TEST_HUSKY
 //#define TEST_DYNA
-#define TEST_PING
+//#define TEST_PING
 //#define TEST_COMMUNICATION
-#define MAIN_PROGRAM
+//#define MAIN_PROGRAM
+#define TEST_BENCH
 
 //*************************** FUZZY CONST **********************************//
-#define INPUT_BATAS_BAWAH 	3
-#define INPUT_BATAS_TENGAH	6
-#define INPUT_BATAS_ATAS		9
+#define INPUT_BATAS_BAWAH 	2
+#define INPUT_BATAS_TENGAH	4
+#define INPUT_BATAS_ATAS		6
 
-#define OUTPUT_BATAS_BAWAH 	-10
+#define OUTPUT_BATAS_BAWAH 	-20
 #define OUTPUT_BATAS_TENGAH	0
-#define OUTPUT_BATAS_ATAS		10
+#define OUTPUT_BATAS_ATAS		20
 
 //*************************** MODE KALKULASI ********************************//
 #define USE_FUZZY 				
@@ -133,6 +134,7 @@ typedef enum{
 	KOSONG_KIRI = 0x02U
 }home_typedef_t;
 
+huskylens_area_identification_t running_arena = HOME;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -216,8 +218,8 @@ float setpoint_pk = 160;
 
 // PID Wall Follower
 PIDController pid_wf;
-float setpoint_wf = INPUT_BATAS_TENGAH;
-
+float setpoint_wf = 4;
+float setpoint_wf_y = 10;
 // PID Stabilizer
 PIDController pid_st;
 float setpoint_st = 0;
@@ -398,13 +400,13 @@ int main(void)
 	PIDController_Init(&pid_pk);
 	
 	// PID untuk Wall Follower
-	pid_wf.Kp = 3; 				pid_wf.Ki = 0; 				pid_wf.Kd = 1; 					pid_wf.tau = 0.02;
+	pid_wf.Kp = 5; 				pid_wf.Ki = 0; 				pid_wf.Kd = 3; 					pid_wf.tau = 0.02;
 	pid_wf.limMax = 20; 	pid_wf.limMin = -20; 	pid_wf.limMaxInt = 5; 	pid_wf.limMinInt = -5;
 	pid_wf.T_sample = SAMPLE_TIME_S;
 	PIDController_Init(&pid_wf);
 	
 	// PID untuk Stabilizer
-	pid_st.Kp = 1; 				pid_st.Ki = 0; 				pid_st.Kd = 1; 					pid_st.tau = 0.02;
+	pid_st.Kp = 2; 				pid_st.Ki = 0; 				pid_st.Kd = 2; 					pid_st.tau = 0.02;
 	pid_st.limMax = 20; 	pid_st.limMin = -20; 	pid_st.limMaxInt = 5; 	pid_st.limMinInt = -5;
 	pid_st.T_sample = SAMPLE_TIME_S;
 	PIDController_Init(&pid_st);
@@ -423,16 +425,31 @@ int main(void)
   while (1)
   {
 		#ifdef MAIN_PROGRAM
-//		tx_statis(90,0,-90);
-//		scp_deteksi_korban(1);
-//		blocks = husky_getBlocks();
-//		husky_distance = husky_distance_prediction();
-//		scp_deteksi_korban(1);
-		scp_wall_follower(STATE_KANAN);
-//		tx_move_jalan(20, 15, 40, 15, JALAN_NORMAL, 5);
-//		tx_move_rotasi(0, 0, 30, 30, 1, 10, 5);
-//		tx_move_jalan(0, -10, 30, 15, JALAN_NORMAL, 5);
-//		scp_wall_stabilizer(STATE_KANAN);
+		if(running_arena == HOME){
+			if(Home_Identification() == KOSONG_KANAN){
+				dyna_calibrate(&ax);
+				tx_move_jalan(15, 0, 30, 15, JALAN_NORMAL, 5);
+			}
+			else if(Home_Identification() == KOSONG_KIRI){
+				dyna_calibrate(&ax);
+				dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
+				tx_move_jalan(-15, 0, 30, 15, JALAN_NORMAL, 5);
+			}
+		}
+		#endif
+
+		#ifdef TEST_BENCH
+		//		tx_statis(90,0,-90);
+		//		scp_deteksi_korban(1);
+		//		blocks = husky_getBlocks();
+		//		husky_distance = husky_distance_prediction();
+		//		scp_deteksi_korban(1);
+		//		scp_wall_follower(STATE_KIRI);
+		//		tx_move_jalan(20, 15, 30, 15, JALAN_NORMAL, 5);
+		//		tx_move_rotasi(0, 0, 30, 30, 1, 10, 5);
+		//		tx_move_jalan(-20, 15, 30, 15, JALAN_NORMAL, 5);
+		//		scp_wall_stabilizer(STATE_KIRI);
+		scp_wall_follower(STATE_DEPAN);
 		#endif
 		//************************* HUSKY TEST ***********************//
 		#ifdef TEST_HUSKY
@@ -440,6 +457,7 @@ int main(void)
 		blocks = husky_getBlocks();
 		#endif
 		#endif
+		
 		
 		//************************* DYNAMIXEL TEST ***********************//
 		#ifdef TEST_DYNA
@@ -706,25 +724,25 @@ void fuzzy_run(uint8_t state_jalan, double input){
 			fuzzy_fuzfication_input(&input_fuzzy, &fuz_fic_input, input);
 			fuzzy_logic_rule(&output_fuzzy, &fuz_fic_input, &defuz, FUZZY_MIN_TO_MAX);
 			res = fuzzy_defuz(&defuz,&fuz_fic_input);
-			tx_move_jalan(res, 15, 50, 10, JALAN_NORMAL, 2);
+			tx_move_jalan(res, 15, 50, 15, JALAN_NORMAL, 2);
 		}
 		else if((state_jalan == STATE_KIRI)&&(input > 0.0)){
 			fuzzy_fuzfication_input(&input_fuzzy, &fuz_fic_input, input);
 			fuzzy_logic_rule(&output_fuzzy, &fuz_fic_input, &defuz, FUZZY_MIN_TO_MAX);
 			res = fuzzy_defuz(&defuz,&fuz_fic_input);
-			tx_move_jalan(res*(-1), 15, 50, 10, JALAN_NORMAL, 2);
+			tx_move_jalan(res*(-1), 15, 50, 15, JALAN_NORMAL, 2);
 		}
 		else if ((state_jalan == STATE_DEPAN)&&(input > 0.0)){
 			fuzzy_fuzfication_input(&input_fuzzy, &fuz_fic_input, input);
 			fuzzy_logic_rule(&output_fuzzy, &fuz_fic_input, &defuz, FUZZY_MIN_TO_MAX);
 			res = fuzzy_defuz(&defuz,&fuz_fic_input);
-			tx_move_jalan(15, res, 50, 10, JALAN_NORMAL, 2);
+			tx_move_jalan(15, res, 50, 15, JALAN_NORMAL, 2);
 		}
 		else if((state_jalan == STATE_BELAKANG)&&(input > 0.0)){
 			fuzzy_fuzfication_input(&input_fuzzy, &fuz_fic_input, input);
 			fuzzy_logic_rule(&output_fuzzy, &fuz_fic_input, &defuz, FUZZY_MIN_TO_MAX);
 			res = fuzzy_defuz(&defuz,&fuz_fic_input);
-			tx_move_jalan(15, res*(-1), 50, 10, JALAN_NORMAL, 2);
+			tx_move_jalan(15, res*(-1), 50, 15, JALAN_NORMAL, 2);
 		}
 }
 #endif
@@ -735,13 +753,25 @@ void pid_run(uint8_t state_jalan, double input){
 		if((state_jalan == STATE_KANAN)&&(input > 0.0)){
 			for (float t = 0.0f; t <= 5; t += SAMPLE_TIME_S) {
 				PIDController_Update(&pid_wf, setpoint_wf, input);
-				tx_move_jalan(pid_wf.out, 15, 40, 15, JALAN_NORMAL);
+				tx_move_jalan((pid_wf.out*(-1)), 15, 40, 15, JALAN_NORMAL,2);
 			}
 		}
 		else if((state_jalan == STATE_KIRI)&&(input > 0.0)){
 			for (float t = 0.0f; t <= 5; t += SAMPLE_TIME_S){
 				PIDController_Update(&pid_wf, setpoint_wf, input);
-				tx_move_jalan(pid_wf.out, 15, 40, 15, JALAN_NORMAL);
+				tx_move_jalan(pid_wf.out, 15, 40, 15, JALAN_NORMAL,2);
+			}
+		}
+		else if((state_jalan == STATE_DEPAN)&&(input > 0.0)){
+			for (float t = 0.0f; t <= 5; t += SAMPLE_TIME_S){
+				PIDController_Update(&pid_wf, setpoint_wf_y, input);
+				tx_move_jalan(15, pid_wf.out*(-1), 40, 15, JALAN_NORMAL,2);
+			}
+		}
+		else if((state_jalan == STATE_BELAKANG)&&(input > 0.0)){
+			for (float t = 0.0f; t <= 5; t += SAMPLE_TIME_S){
+				PIDController_Update(&pid_wf, setpoint_wf_y, input);
+				tx_move_jalan(15, pid_wf.out, 40, 15, JALAN_NORMAL,2);
 			}
 		}
 }
@@ -765,7 +795,7 @@ void scp_wall_follower(uint8_t state){
 
 		#ifdef FILTER_AVG
 		// Belok
-		if((FFV <= 18) && !(state == STATE_DEPAN)){
+		if(((FFV <= 18) && (FFV > 0) && (FFV != 1)) && !(state == STATE_DEPAN)){
 			
 			// Belok Kanan
 			if((FRV >= LEBAR_PEMBACAAN) && (BRV >= LEBAR_PEMBACAAN) && (FFV <= 18) && (state == STATE_KANAN)){
@@ -781,7 +811,7 @@ void scp_wall_follower(uint8_t state){
 		}
 		
 		// Kiri
-		else if((FLV > 0) && (BLV > 0) && (state == STATE_KIRI)){
+		else if((FLV > 0) && (BLV > 0) && (FLV != 1) && (BLV != 1) && (state == STATE_KIRI)){
 			
 			// Filter Tembok Rata
 			if((FLV <= LEBAR_PEMBACAAN) && (BLV <= LEBAR_PEMBACAAN)){
@@ -795,21 +825,21 @@ void scp_wall_follower(uint8_t state){
 			}
 			
 			// Fiter indikasi Loss
-			else if((FLV >= LEBAR_PEMBACAAN) || (BLV >= LEBAR_PEMBACAAN)){
-				kiri = INPUT_BATAS_TENGAH;
-				#ifdef WALL_FOLLOWER_PID
-				pid_run(STATE_KIRI, kiri);
-				#endif
-				#ifdef WALL_FOLLOWER_FUZZY
-				fuzzy_run(STATE_KIRI, kiri);
-				#endif
-			}		
+//			else if((FLV >= LEBAR_PEMBACAAN) || (BLV >= LEBAR_PEMBACAAN)){
+//				kiri = INPUT_BATAS_TENGAH;
+//				#ifdef WALL_FOLLOWER_PID
+//				pid_run(STATE_KIRI, kiri);
+//				#endif
+//				#ifdef WALL_FOLLOWER_FUZZY
+//				fuzzy_run(STATE_KIRI, kiri);
+//				#endif
+//			}		
 		#endif
 		
 		}
 		
 		// Kanan
-		else if((FRV > 0) && (BRV > 0) && (state == STATE_KANAN)){
+		else if((FRV > 0) && (BRV > 0) && (FRV != 1) && (BRV != 1) && (state == STATE_KANAN)){
 			
 			// Filter Tembok Rata
 			if((FRV <= LEBAR_PEMBACAAN) && (BRV <= LEBAR_PEMBACAAN)){
@@ -823,20 +853,20 @@ void scp_wall_follower(uint8_t state){
 			}
 			
 			// Fiter indikasi Loss
-			else if((FRV >= LEBAR_PEMBACAAN) || (BRV >= LEBAR_PEMBACAAN)){
-				kanan = INPUT_BATAS_TENGAH;
-				#ifdef WALL_FOLLOWER_FUZZY
-				fuzzy_run(STATE_KANAN, kanan);
-				#endif
-				#ifdef WALL_FOLLOWER_PID
-				pid_run(STATE_KANAN, kanan);
-				#endif
-			}
+//			else if((FRV >= LEBAR_PEMBACAAN) || (BRV >= LEBAR_PEMBACAAN)){
+//				kanan = INPUT_BATAS_TENGAH;
+//				#ifdef WALL_FOLLOWER_FUZZY
+//				fuzzy_run(STATE_KANAN, kanan);
+//				#endif
+//				#ifdef WALL_FOLLOWER_PID
+//				pid_run(STATE_KANAN, kanan);
+//				#endif
+//			}
 			
 		}
 		
 		// Depan
-		else if((state == STATE_DEPAN) && (FFV >= 0)){
+		else if((state == STATE_DEPAN) && (FFV >= 0) && (FFV != 1)){
 			depan = (FFV);
 			#ifdef WALL_FOLLOWER_FUZZY
 			fuzzy_run(STATE_DEPAN, depan);
@@ -847,7 +877,7 @@ void scp_wall_follower(uint8_t state){
 		}
 		
 		// Belakang
-		else if((state == STATE_BELAKANG) && (BBV >= 0)){
+		else if((state == STATE_BELAKANG) && (BBV >= 0) && (BBV != 1)){
 			belakang = (BBV);
 			#ifdef WALL_FOLLOWER_FUZZY
 			fuzzy_run(STATE_BELAKANG, belakang);
@@ -1145,13 +1175,12 @@ home_typedef_t Home_Identification(void){
 		double kanan = (BRV + FRV)/2;
 		double kiri = (BLV + FLV)/2;
 		
-		if(kanan > kiri){
-			dyna_calibrate(&ax);
+		if((kiri < 10) && (kiri > 1)){
+			running_arena = R1;
 			return KOSONG_KANAN;
 		}
 		else{
-			dyna_calibrate(&ax);
-			dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
+			running_arena = R1;
 			return KOSONG_KIRI;
 		}
 }
