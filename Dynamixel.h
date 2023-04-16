@@ -31,6 +31,13 @@ typedef enum{
 	MOVING_CW = 0x01U
 }dynamixel_direction_t;
 
+typedef enum{
+	KEPALA_DEPAN = 0X01U,
+	KEPALA_KANAN = 0X02U,
+	KEPALA_BELAKANG = 0X03U,
+	KEPALA_KIRI = 0X04U
+}dynamixel_kepala_direction_t;
+
 void dyna_set_bautrate(dynamixel_t* dyn, uint8_t speed);
 void dyna_set_delay(dynamixel_t* dyn, uint8_t time);
 void dyna_set_voltage_limit(dynamixel_t* dyn, uint8_t up, uint8_t down);

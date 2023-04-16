@@ -267,4 +267,5 @@ void dyna_scan(dynamixel_t* dyn, uint16_t start, uint16_t speed, dynamixel_direc
 	dyna_set_moving_speed(dyn, speed, dir);
 	dyna_set_goal_position(dyn, 1023);
 }
+
 // ---------------------------------- END FOR COMPETITION PURPOUSE ---------------------------------------

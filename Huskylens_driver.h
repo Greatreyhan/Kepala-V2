@@ -42,6 +42,10 @@ typedef enum{
 	R10 = 0x0AU,
 	R11 = 0x0BU,
 	FINISH = 0x0CU,
+	K1 = 0x0D,
+	K2 = 0x0E,
+	K3 = 0x0F,
+	K4 = 0x10,
 	ERROR_ROOM = 0x0F,
 }huskylens_area_identification_t;
 
