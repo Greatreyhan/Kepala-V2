@@ -228,7 +228,7 @@ float setpoint_pk = 160;
 // PID Wall Follower
 PIDController pid_wf;
 float setpoint_wf = 4;
-float setpoint_wf_y = 6;
+float setpoint_wf_y = 8;
 // PID Stabilizer
 PIDController pid_st;
 float setpoint_st = 0;
@@ -424,7 +424,7 @@ int main(void)
 	
 	// PID untuk Jalan Follower Korban
 	pid_kf.Kp = 3; 				pid_kf.Ki = 0; 				pid_kf.Kd = 1; 					pid_kf.tau = 0.02;
-	pid_kf.limMax = 25; 	pid_kf.limMin = -25; 	pid_kf.limMaxInt = 5; 	pid_kf.limMinInt = -5;
+	pid_kf.limMax = 20; 	pid_kf.limMin = -20; 	pid_kf.limMaxInt = 5; 	pid_kf.limMinInt = -5;
 	pid_kf.T_sample = SAMPLE_TIME_S;
 	PIDController_Init(&pid_kf);
 	#endif
@@ -464,13 +464,22 @@ int main(void)
 		}
 		if(running_arena == R1){
 			FFV = ping_read(FF);
-			if(FFV <= 13) tx_move_steady();
+			if(FFV <= 13){
+				tx_move_steady();
+				running_arena = R2;
+			}
 			else scp_korban_follower(1, DIRECTION_DEPAN);
 		}
+		if(running_arena == R2){
+			tx_move_rotasi(0, 0, -30, 30, 1, 10, 10);
+			HAL_Delay(1000);
+		}
 	}
+	
 		#endif
 
 		#ifdef TEST_BENCH
+//		scp_korban_follower(1, DIRECTION_DEPAN);
 		//		tx_statis(90,0,-90);
 		//		scp_deteksi_korban(1);
 		//		blocks = husky_getBlocks();
@@ -807,8 +816,8 @@ void pid_run(uint8_t state_jalan, double input, follower_direction_t dir){
 		else if((state_jalan == STATE_BELAKANG)&&(input > 0.0)){
 			for (float t = 0.01f; t <= 5; t += SAMPLE_TIME_S){
 				PIDController_Update(&pid_wf, setpoint_wf_y, input);
-				if(dir == DIRECTION_KANAN) tx_move_jalan(15, pid_wf.out, 40, SPEED_WALKING, JALAN_NORMAL,1);
-				else if(dir == DIRECTION_KIRI) tx_move_jalan(-15, pid_wf.out, 40, SPEED_WALKING, JALAN_NORMAL,1);
+				if(dir == DIRECTION_KANAN) tx_move_jalan(20, pid_wf.out, 40, SPEED_WALKING, JALAN_NORMAL,1);
+				else if(dir == DIRECTION_KIRI) tx_move_jalan(-20, pid_wf.out, 40, SPEED_WALKING, JALAN_NORMAL,1);
 			}
 		}
 }
@@ -1109,7 +1118,7 @@ bool scp_deteksi_safety_zone_2(uint8_t id){
 	
 #ifdef HUSKY_ON
 #ifdef DYNA_ON
-bool scp_korban_follower(uint8_t id, follower_direction_t dir){
+bool scp_deteksi_korban(uint8_t id, follower_direction_t dir){
 
 	// Set ke Algoritma color detection
 	if(algorithm_type != ALGORITHM_COLOR_RECOGNITION){
@@ -1119,53 +1128,7 @@ bool scp_korban_follower(uint8_t id, follower_direction_t dir){
 	#ifdef HUSKY_ON
 		blocks = husky_getBlocks();
 		dyna_sudut = dyna_read_posisition(&ax);
-		if(blocks.id == id){
-			
-			#ifdef DYNA_ON
-			
-				#ifdef DETEKSI_KORBAN_FUZZY
-				fuzzy_fuzfication_input(&husky_input_fuzzy, &husky_fuz_fic_input, blocks.X_center);
-				fuzzy_logic_rule(&husky_output_fuzzy, &husky_fuz_fic_input, &husky_defuz, FUZZY_MIN_TO_MAX);
-				husky_res = fuzzy_defuz(&husky_defuz,&husky_fuz_fic_input);
-				
-				if(husky_res >= 0){
-					dyna_set_moving_speed(&ax, 50, MOVING_CW);
-					dyna_set_goal_position(&ax, dyna_sudut-husky_res);
-				}
-				else if(husky_res < 0){
-					dyna_set_moving_speed(&ax, 50, MOVING_CCW);
-					dyna_set_goal_position(&ax, dyna_sudut-husky_res);
-				}
-				
-				// Send Message
-				if(dyna_sudut <= 1023){
-						tx_move_jalan(((511.5-dyna_sudut)/(1023/40))*(-1), 15, 30, 15, JALAN_NORMAL,2);
-				}
-				
-				#endif
-				
-				#ifdef DETEKSI_KORBAN_PID
-				for (float t = 0.01f; t <= 5; t += SAMPLE_TIME_S) {
-
-					PIDController_Update(&pid_pk, setpoint_pk, blocks.X_center);
-					PIDController_Update(&pid_kf, setpoint_kf, dyna_sudut);
-					if(pid_pk.out >= 0){
-						dyna_set_moving_speed(&ax, 50, MOVING_CW);
-						dyna_set_goal_position(&ax, dyna_sudut+pid_pk.out);
-					}
-					else if(pid_pk.out < 0){
-						dyna_set_moving_speed(&ax, 50, MOVING_CCW);
-						dyna_set_goal_position(&ax, dyna_sudut+pid_pk.out);
-					}
-					
-//					if((155 <= blocks.X_center) && (blocks.X_center <= 165)) return true;
-					if(dyna_sudut <= 1023){
-						tx_move_jalan(pid_kf.out, 15, 30, 15, JALAN_NORMAL, 2);
-					}
-				}
-				#endif
-			
-			#endif
+		if(blocks.id == id){	
 			return true;
 		}
 		if(dyna_sudut >= 1023){
@@ -1180,7 +1143,7 @@ bool scp_korban_follower(uint8_t id, follower_direction_t dir){
 	
 #ifdef HUSKY_ON
 #ifdef DYNA_ON
-bool scp_deteksi_korban(uint8_t id, follower_direction_t dir){
+bool scp_korban_follower(uint8_t id, follower_direction_t dir){
 
 	// Set ke Algoritma color detection
 	if(algorithm_type != ALGORITHM_COLOR_RECOGNITION){
@@ -1223,7 +1186,9 @@ bool scp_deteksi_korban(uint8_t id, follower_direction_t dir){
 						dyna_set_goal_position(&ax, dyna_sudut+pid_pk.out);
 					}
 					
-//					if((155 <= blocks.X_center) && (blocks.X_center <= 165)) return true;
+					if(dyna_sudut <= 1023){
+						tx_move_jalan(pid_kf.out, 15, 30, 15, JALAN_NORMAL, 2);
+					}
 				}
 				return true;
 				#endif
