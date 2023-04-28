@@ -51,11 +51,14 @@ typedef enum{
 }type_jalan_t;
 
 typedef enum{
-	STANDBY = 0x01U,
-	CAPIT_START = 0x02U,
-	EVAKUASI = 0x03U,
-	HOME_CAPIT = 0x04U
+	AMBIL_KORBAN = 0x01U,
+	PENYELAMATAN_KORBAN = 0x02U,
 }type_capit_t;
+
+typedef enum{
+	CAPIT_KORBAN = 0x01U,
+	CAPIT_KOSONG = 0x02U,
+}type_capit_status_t;
 
 typedef enum{
 	MOVE_DEPAN = 0x01U,
@@ -77,6 +80,8 @@ typedef struct{
 	int8_t speed;
 	mode_jalan_t mode_jalan;
 	type_capit_t cmd;
+	type_capit_status_t status;
+	int8_t speed_capit;
 	type_skew_t skew_mode;
 	uint8_t skew_value;
 }com_get_t;
@@ -93,6 +98,6 @@ void rx_feedback(feedback_t* fed);
 void rx_start_get(void);
 void rx_get(com_get_t* get);
 bool tx_statis(int16_t pos_x, int16_t pos_y, int16_t pos_z);
-bool tx_capit(type_capit_t cmd);
+bool tx_capit(type_capit_t cmd, type_capit_status_t status, int8_t speed_capit);
 bool tx_serok(type_serok_t cmd);
 #endif

@@ -25,16 +25,9 @@
 
 //*************************** CONFIGURATIONS **********************************//
 #define DETEKSI_KORBAN_PID
-//#define DETEKSI_KORBAN_FUZZY
-
 #define WALL_FOLLOWER_PID
-//#define WALL_FOLLOWER_FUZZY
-
-//#define USE_STABILIZE_FUZZY
 #define USE_STABILIZE_PID
-
 #define DETEKSI_SF_PID
-//#define DETEKSI_SF_FUZZY
 
 //*************************** PARAMETERS **********************************//
 #define SPEED_WALKING						10
@@ -51,22 +44,24 @@
 //#define TEST_DYNA
 //#define TEST_PING
 //#define TEST_COMMUNICATION
-#define MAIN_PROGRAM
+//#define MAIN_PROGRAM
+#define MAIN_PROGRAM_STACK
 //#define TEST_BENCH
 
-//*************************** FUZZY CONST **********************************//
-#define INPUT_BATAS_BAWAH 	2
-#define INPUT_BATAS_TENGAH	4
-#define INPUT_BATAS_ATAS		6
-
-#define OUTPUT_BATAS_BAWAH 	-20
-#define OUTPUT_BATAS_TENGAH	0
-#define OUTPUT_BATAS_ATAS		20
-
-//*************************** MODE KALKULASI ********************************//
-#define USE_FUZZY 				
-#define USE_PID						
-//#define USE_PID_FUZZY		
+//*************************** VARIABEL JALAN ********************************//
+#define STEP_0
+//#define STEP_1
+//#define STEP_2
+//#define STEP_3
+//#define STEP_4
+//#define STEP_5
+//#define STEP_6
+//#define STEP_7
+//#define STEP_8
+//#define STEP_9
+//#define STEP_10
+//*************************** MODE KALKULASI ********************************//			
+#define USE_PID								
 
 //*************************** ON/OFF MODUL ********************************//
 #define HUSKY_ON 					
@@ -90,10 +85,6 @@
 
 #ifdef DYNA_ON
 #include "Dynamixel.h"
-#endif
-
-#ifdef USE_FUZZY
-#include "Fuzzy.h"
 #endif
 
 #ifdef USE_PID
@@ -210,15 +201,6 @@ dynamixel_t ax;
 uint16_t dyna_sudut = 0;
 #endif
 
-//***************************** CONFIG FUZZY**********************************//
-#ifdef USE_FUZZY
-Fuzzy_input_t input_fuzzy, rotasi_input_fuzzy, husky_input_fuzzy;
-Fuzzy_output_t output_fuzzy, rotasi_output_fuzzy, husky_output_fuzzy;
-Fuzzy_fuzzyfication_t fuz_fic_input, rotasi_fuz_fic_input, husky_fuz_fic_input;
-Fuzzy_defuz_t defuz, rotasi_defuz, husky_defuz;
-double res, rotasi_res, husky_res;	
-#endif
-
 //***************************** CONFIG PID **********************************//
 #ifdef USE_PID
 // PID pencarian korban
@@ -229,6 +211,7 @@ float setpoint_pk = 160;
 PIDController pid_wf;
 float setpoint_wf = 4;
 float setpoint_wf_y = 8;
+
 // PID Stabilizer
 PIDController pid_st;
 float setpoint_st = 0;
@@ -256,12 +239,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	rx_feedback(&feeding);
 }
 #endif
-//****************************** PROTOTYPE CALCULATION  *******************************//
-void fuzzy_run(uint8_t state_jalan, double input);
 void pid_run(uint8_t state_jalan, double input, follower_direction_t dir);
+void pid_run_batu(uint8_t state_jalan, double input, follower_direction_t dir);
 
 //****************************** PROTOTYPE ACTION  ************************************//
 void scp_wall_follower(uint8_t state, follower_direction_t direction_play);
+void scp_wall_follower_batu(uint8_t state, follower_direction_t direction_play);
 void scp_belok(uint8_t direction, uint16_t time);
 void scp_wall_stabilizer(uint8_t state);
 bool scp_deteksi_korban(uint8_t id, follower_direction_t dir);
@@ -273,6 +256,7 @@ void scp_pengangkatan_korban(void);
 void scp_penurunan_korban(void);
 void scp_kepala_move(dynamixel_kepala_direction_t dir);
 bool scp_korban_follower(uint8_t id, follower_direction_t dir);
+void scp_wall_follower_belakang(void);
 
 //****************************** PROTOTYPE ALGORITMA JALAN ****************************//
 home_typedef_t Home_Identification(void);
@@ -302,6 +286,7 @@ bool Penyelamatan_Korban_5(void);
   * @retval int
   */
 int main(void)
+
 
 {
   /* USER CODE BEGIN 1 */
@@ -337,9 +322,9 @@ int main(void)
 	komunikasi_init(&huart2);
 	rx_start();
 	tx_move_steady();
+	HAL_Delay(1000);
 	while(!feeding.statis){
-		tx_statis(70,35,-100); 
-		
+		tx_statis(80,70,-100); 
 		HAL_Delay(10);
 	}
 	#endif
@@ -384,22 +369,6 @@ int main(void)
 	#ifdef DYNA_ON
 	dyna_init(&huart4, &ax, 0x11);
 	dyna_calibrate(&ax);
-	dyna_scan(&ax, 0, 200, MOVING_CW);
-	#endif
-	
-	//*********************** FUZZY CONFIG **************************//
-	#ifdef USE_FUZZY
-	// PING SENSOR
-	fuzzy_set_membership_input(&input_fuzzy, INPUT_BATAS_BAWAH, INPUT_BATAS_TENGAH, INPUT_BATAS_ATAS);
-	fuzzy_set_membership_output(&output_fuzzy, OUTPUT_BATAS_BAWAH, OUTPUT_BATAS_TENGAH, OUTPUT_BATAS_ATAS);
-	
-	// PING STABILIZER
-	fuzzy_set_membership_input(&rotasi_input_fuzzy, -10, 0, 10);
-	fuzzy_set_membership_output(&rotasi_output_fuzzy, -20, 0, 20);
-	
-	// HUSKY
-	fuzzy_set_membership_input(&husky_input_fuzzy, 0, 160, 320);
-	fuzzy_set_membership_output(&husky_output_fuzzy, -23, 0, 23);
 	#endif
 	
 	//*********************** PID CONFIG **************************//
@@ -411,7 +380,7 @@ int main(void)
 	PIDController_Init(&pid_pk);
 	
 	// PID untuk Wall Follower
-	pid_wf.Kp = 5; 				pid_wf.Ki = 0; 				pid_wf.Kd = 3; 					pid_wf.tau = 0.02;
+	pid_wf.Kp = 3; 				pid_wf.Ki = 0; 				pid_wf.Kd = 3; 					pid_wf.tau = 0.02;
 	pid_wf.limMax = 20; 	pid_wf.limMin = -20; 	pid_wf.limMaxInt = 5; 	pid_wf.limMinInt = -5;
 	pid_wf.T_sample = SAMPLE_TIME_S;
 	PIDController_Init(&pid_wf);
@@ -429,9 +398,149 @@ int main(void)
 	PIDController_Init(&pid_kf);
 	#endif
 	
-	#ifdef TEST_BENCH
-		
+	//**********************======================*************************//
+	//**********************= ONE STOP ALGORITHM =*************************//
+	//**********************======================*************************//
+	#ifdef MAIN_PROGRAM_STACK
+	
+	//----- TEST STEP
+	#ifdef STEP_0
+	while(1){
+//		tx_move_jalan(-20, pid_wf.out, 50, SPEED_WALKING, JALAN_NORMAL,1);
+//		tx_move_rotasi(0, 0, 20, 60, 1, 15, 5);
+		scp_wall_stabilizer(STATE_KIRI);
+		HAL_Delay(5);
+	}
 	#endif
+	
+	//----- Home -----
+	//1. Identifikasi Arah Pergerakan
+	#ifdef STEP_1
+	while(1){
+		// Pembacaan Sensor PING
+		FRV = ping_read(FR);
+		BRV = ping_read(BR);
+		BLV = ping_read(BL);
+		FLV = ping_read(FL);
+		
+		if((FLV < 15) && (FLV > 1)){
+			home_direction = KOSONG_KANAN;
+			scp_kepala_move(KEPALA_BELAKANG);
+			break;
+		}
+		else if((FRV < 15) && (FRV > 1)){
+			home_direction = KOSONG_KIRI;
+			scp_kepala_move(KEPALA_DEPAN);
+			break;
+		}
+	}
+	#endif
+	
+	//2. Bergerak sesuai konfigurasi Start
+	#ifdef STEP_2
+	while(1){
+		if(scp_deteksi_korban(1, DIRECTION_DEPAN)) break;
+		else if(home_direction == KOSONG_KANAN) scp_wall_follower(STATE_DEPAN, DIRECTION_KANAN);
+		else if(home_direction == KOSONG_KIRI) scp_wall_follower(STATE_BELAKANG, DIRECTION_KIRI);
+	}
+	#endif
+	
+	//3. Pencarian korban K1
+	#ifdef STEP_3
+	while(1){
+		FFV = ping_read(FF);
+		if(FFV <= 15){
+			tx_move_steady();
+			break;
+		} 
+		else scp_korban_follower(1, DIRECTION_DEPAN);
+	}
+	#endif
+	
+	// 4. Pengangkatan Korban
+	#ifdef STEP_4
+	#endif
+	// 5. Mundur/Maju Sesuai dengan batas belakan
+	#ifdef STEP_5
+	while(1){
+			HAL_Delay(10);
+			BBV = ping_read(BB);
+			if(BBV > 1){
+				if(BBV >= 13) tx_move_jalan(0, -10, 30, SPEED_WALKING, JALAN_NORMAL, 10);
+				else{
+					tx_move_steady();
+					break;
+				}
+			}
+	}
+	#endif
+	
+	// 6. Linear moving untuk melewati obstacle jalan pecah
+	#ifdef STEP_6
+	while(1){
+		FFV = ping_read(FF);
+		FLV = ping_read(FL);
+		BLV = ping_read(BL);
+		if((FLV > 1)&&(BLV > 1) && (FFV > 1)){
+			if((FLV <= 10)&&(BLV <= 10) && (FFV >= 15)){
+				tx_move_steady();
+				break;
+			}
+			else scp_wall_follower_belakang();
+		}
+	}
+	#endif
+	
+	// 7. Melewati Jalanan Menurun
+	#ifdef STEP_7
+	while(1){
+		FFV = ping_read(FF);
+		FLV = ping_read(FL);
+		BLV = ping_read(BL);
+		if((FLV > 1)&&(BLV > 1) && (FFV > 1)){
+			if(FFV >= 12){
+				scp_wall_follower_batu(STATE_KIRI, DIRECTION_DEPAN);
+			}
+			else{
+				tx_move_steady();
+				break;
+			}
+		}
+		HAL_Delay(1);
+	}
+	
+	#endif
+	
+	// 8. Melewati jalanan Berbatu -> Rotasi Searah Jam
+	#ifdef STEP_8
+	while(1){
+		FRV = ping_read(FR);
+		BRV = ping_read(BR);
+		BLV = ping_read(BL);
+		FLV = ping_read(FL);
+		FFV = ping_read(FF);
+		BBV = ping_read(BB);
+		if( (FRV > 1) && (BRV > 1) && (FFV > 1) && (BBV > 1)){
+			
+		}	
+		
+	}
+	#endif
+	
+	// 9. Melewati Jalanan Kelereng
+	#ifdef STEP_9
+	#endif
+	
+	// 10. Melewati SZ2
+	#ifdef STEP_10
+	#endif
+	
+	// 11. Mencari Korban K4
+	#ifdef STEP_11
+	#endif
+	
+	#endif
+	
 
   /* USER CODE END 2 */
 
@@ -444,35 +553,44 @@ int main(void)
 		if(running_arena == HOME){
 			if(Home_Identification() == KOSONG_KANAN){
 					scp_kepala_move(KEPALA_BELAKANG);
-					tx_move_jalan(15, 0, 30, SPEED_WALKING, JALAN_NORMAL, 10);
 					home_direction = KOSONG_KANAN;
 					running_arena = K1;
 			}
 			else if(Home_Identification() == KOSONG_KIRI){
 					scp_kepala_move(KEPALA_DEPAN);
-					tx_move_jalan(-15, 0, 30, SPEED_WALKING, JALAN_NORMAL, 10);
 					home_direction = KOSONG_KIRI;
 					running_arena = K1;
 			}
 		}
 		if(running_arena == K1){
-			if(scp_deteksi_korban(1, DIRECTION_DEPAN) == true){
+			if(scp_deteksi_korban(1, DIRECTION_DEPAN)){
 				running_arena = R1;
 			}
 			else if(home_direction == KOSONG_KANAN) scp_wall_follower(STATE_DEPAN, DIRECTION_KANAN);
 			else if(home_direction == KOSONG_KIRI) scp_wall_follower(STATE_BELAKANG, DIRECTION_KIRI);
 		}
 		if(running_arena == R1){
+			scp_korban_follower(1, DIRECTION_DEPAN);
 			FFV = ping_read(FF);
-			if(FFV <= 13){
+			if(FFV <= 15){
 				tx_move_steady();
 				running_arena = R2;
 			}
-			else scp_korban_follower(1, DIRECTION_DEPAN);
 		}
 		if(running_arena == R2){
-			tx_move_rotasi(0, 0, -30, 30, 1, 10, 10);
-			HAL_Delay(1000);
+			tx_move_jalan(0, -10, 30, SPEED_WALKING, JALAN_NORMAL, 10);
+			HAL_Delay(2000);
+			running_arena = R3;
+		}
+		if(running_arena == R3){
+			scp_wall_follower_belakang();
+			HAL_Delay(7000);
+			running_arena = R4;
+		}
+		if(running_arena == R4){
+			FLV = ping_read(FL);
+			BLV = ping_read(BL);
+			if((FLV <= 10) && (FLV > 1) && (BLV > 1) && (BLV <= 10)) tx_move_steady();
 		}
 	}
 	
@@ -491,6 +609,8 @@ int main(void)
 		//		tx_move_rotasi(0, 0, 30, 30, 1, 10, 5);
 		//		tx_move_jalan(-20, 15, 30, 15, JALAN_NORMAL, 5);
 		//		scp_wall_stabilizer(STATE_KIRI);
+//		scp_wall_follower(STATE_BELAKANG, DIRECTION_KIRI);
+		dyna_calibrate(&ax);
 		
 		#endif
 		//************************* HUSKY TEST ***********************//
@@ -758,39 +878,40 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-//************************* FUZZY CALCULATION *******************//
-#ifdef WALL_FOLLOWER_FUZZY
-void fuzzy_run(uint8_t state_jalan, double input){
-		
-		if((state_jalan == STATE_KANAN)&&(input > 0.0)){
-			fuzzy_fuzfication_input(&input_fuzzy, &fuz_fic_input, input);
-			fuzzy_logic_rule(&output_fuzzy, &fuz_fic_input, &defuz, FUZZY_MIN_TO_MAX);
-			res = fuzzy_defuz(&defuz,&fuz_fic_input);
-			tx_move_jalan(res, 15, 50, 15, JALAN_NORMAL, 2);
-		}
-		else if((state_jalan == STATE_KIRI)&&(input > 0.0)){
-			fuzzy_fuzfication_input(&input_fuzzy, &fuz_fic_input, input);
-			fuzzy_logic_rule(&output_fuzzy, &fuz_fic_input, &defuz, FUZZY_MIN_TO_MAX);
-			res = fuzzy_defuz(&defuz,&fuz_fic_input);
-			tx_move_jalan(res*(-1), 15, 50, 15, JALAN_NORMAL, 2);
-		}
-		else if ((state_jalan == STATE_DEPAN)&&(input > 0.0)){
-			fuzzy_fuzfication_input(&input_fuzzy, &fuz_fic_input, input);
-			fuzzy_logic_rule(&output_fuzzy, &fuz_fic_input, &defuz, FUZZY_MIN_TO_MAX);
-			res = fuzzy_defuz(&defuz,&fuz_fic_input);
-			tx_move_jalan(15, res, 50, 15, JALAN_NORMAL, 2);
-		}
-		else if((state_jalan == STATE_BELAKANG)&&(input > 0.0)){
-			fuzzy_fuzfication_input(&input_fuzzy, &fuz_fic_input, input);
-			fuzzy_logic_rule(&output_fuzzy, &fuz_fic_input, &defuz, FUZZY_MIN_TO_MAX);
-			res = fuzzy_defuz(&defuz,&fuz_fic_input);
-			tx_move_jalan(15, res*(-1), 50, 15, JALAN_NORMAL, 2);
-		}
-}
-#endif
 
 //************************* PID CALCULATION *******************//
 #ifdef WALL_FOLLOWER_PID
+void pid_run_batu(uint8_t state_jalan, double input, follower_direction_t dir){
+		if((state_jalan == STATE_KANAN)&&(input > 0.0)){
+			for (float t = 0.01f; t <= 5; t += SAMPLE_TIME_S) {
+				PIDController_Update(&pid_wf, setpoint_wf, input);
+				if(dir == DIRECTION_DEPAN) tx_move_jalan((pid_wf.out*(-1)), 15, 40, SPEED_WALKING, JALAN_NORMAL,1);
+				else if(dir == DIRECTION_BELAKANG) tx_move_jalan((pid_wf.out*(-1)), -15, 40, SPEED_WALKING, JALAN_NORMAL,1);
+			}
+		}
+		else if((state_jalan == STATE_KIRI)&&(input > 0.0)){
+			for (float t = 0.01f; t <= 5; t += SAMPLE_TIME_S){
+				PIDController_Update(&pid_wf, setpoint_wf, input);
+				if(dir == DIRECTION_DEPAN) tx_move_jalan(pid_wf.out, 30, 70, SPEED_WALKING, JALAN_NORMAL,1);
+				else if(dir == DIRECTION_BELAKANG) tx_move_jalan(pid_wf.out, -30, 70, SPEED_WALKING, JALAN_NORMAL,1);
+			}
+		}
+		else if((state_jalan == STATE_DEPAN)&&(input > 0.0)){
+			for (float t = 0.01f; t <= 5; t += SAMPLE_TIME_S){
+				PIDController_Update(&pid_wf, setpoint_wf_y, input);
+				if(dir == DIRECTION_KANAN) tx_move_jalan(15, pid_wf.out*(-1), 40, SPEED_WALKING, JALAN_NORMAL,1);
+				else if (dir == DIRECTION_KIRI) tx_move_jalan(-15, pid_wf.out*(-1), 40, SPEED_WALKING, JALAN_NORMAL,1);
+			}
+		}
+		else if((state_jalan == STATE_BELAKANG)&&(input > 0.0)){
+			for (float t = 0.01f; t <= 5; t += SAMPLE_TIME_S){
+				PIDController_Update(&pid_wf, setpoint_wf_y, input);
+				if(dir == DIRECTION_KANAN) tx_move_jalan(20, pid_wf.out, 50, SPEED_WALKING, JALAN_NORMAL,1);
+				else if(dir == DIRECTION_KIRI) tx_move_jalan(-20, pid_wf.out, 50, SPEED_WALKING, JALAN_NORMAL,1);
+			}
+		}
+}
+
 void pid_run(uint8_t state_jalan, double input, follower_direction_t dir){
 		if((state_jalan == STATE_KANAN)&&(input > 0.0)){
 			for (float t = 0.01f; t <= 5; t += SAMPLE_TIME_S) {
@@ -816,8 +937,8 @@ void pid_run(uint8_t state_jalan, double input, follower_direction_t dir){
 		else if((state_jalan == STATE_BELAKANG)&&(input > 0.0)){
 			for (float t = 0.01f; t <= 5; t += SAMPLE_TIME_S){
 				PIDController_Update(&pid_wf, setpoint_wf_y, input);
-				if(dir == DIRECTION_KANAN) tx_move_jalan(20, pid_wf.out, 40, SPEED_WALKING, JALAN_NORMAL,1);
-				else if(dir == DIRECTION_KIRI) tx_move_jalan(-20, pid_wf.out, 40, SPEED_WALKING, JALAN_NORMAL,1);
+				if(dir == DIRECTION_KANAN) tx_move_jalan(20, pid_wf.out, 50, SPEED_WALKING, JALAN_NORMAL,1);
+				else if(dir == DIRECTION_KIRI) tx_move_jalan(-20, pid_wf.out, 50, SPEED_WALKING, JALAN_NORMAL,1);
 			}
 		}
 }
@@ -828,7 +949,6 @@ void pid_run(uint8_t state_jalan, double input, follower_direction_t dir){
 
 void scp_wall_follower(uint8_t state, follower_direction_t direction_play){
 	
-	#ifdef PING_ON
 	// READ VALUE PING 
 		BBV = ping_read(BB);
 		FRV = ping_read(FR);
@@ -838,8 +958,7 @@ void scp_wall_follower(uint8_t state, follower_direction_t direction_play){
 		FFV = ping_read(FF);
 	
 	//************************* Filter for PING **********************//
-
-		#ifdef FILTER_AVG
+	
 		// Belok
 		if(((FFV <= 18) && (FFV > 0) && (FFV != 1)) && !(state == STATE_DEPAN) && !(state == STATE_BELAKANG)){
 			
@@ -862,25 +981,8 @@ void scp_wall_follower(uint8_t state, follower_direction_t direction_play){
 			// Filter Tembok Rata
 			if((FLV <= LEBAR_PEMBACAAN) && (BLV <= LEBAR_PEMBACAAN)){
 				kiri = (FLV + BLV)/2;
-				#ifdef WALL_FOLLOWER_PID
 				pid_run(STATE_KIRI, kiri, direction_play);
-				#endif
-				#ifdef WALL_FOLLOWER_FUZZY
-				fuzzy_run(STATE_KIRI, kiri);
-				#endif
 			}
-			
-			// Fiter indikasi Loss
-//			else if((FLV >= LEBAR_PEMBACAAN) || (BLV >= LEBAR_PEMBACAAN)){
-//				kiri = INPUT_BATAS_TENGAH;
-//				#ifdef WALL_FOLLOWER_PID
-//				pid_run(STATE_KIRI, kiri);
-//				#endif
-//				#ifdef WALL_FOLLOWER_FUZZY
-//				fuzzy_run(STATE_KIRI, kiri);
-//				#endif
-//			}		
-		#endif
 		
 		}
 		
@@ -890,54 +992,73 @@ void scp_wall_follower(uint8_t state, follower_direction_t direction_play){
 			// Filter Tembok Rata
 			if((FRV <= LEBAR_PEMBACAAN) && (BRV <= LEBAR_PEMBACAAN)){
 				kanan = (FRV + BRV)/2;
-				#ifdef WALL_FOLLOWER_FUZZY
-				fuzzy_run(STATE_KANAN, kanan);
-				#endif
-				#ifdef WALL_FOLLOWER_PID
 				pid_run(STATE_KANAN, kanan, direction_play);
-				#endif
 			}
-			
-			// Fiter indikasi Loss
-//			else if((FRV >= LEBAR_PEMBACAAN) || (BRV >= LEBAR_PEMBACAAN)){
-//				kanan = INPUT_BATAS_TENGAH;
-//				#ifdef WALL_FOLLOWER_FUZZY
-//				fuzzy_run(STATE_KANAN, kanan);
-//				#endif
-//				#ifdef WALL_FOLLOWER_PID
-//				pid_run(STATE_KANAN, kanan);
-//				#endif
-//			}
-			
 		}
 		
 		// Depan
 		else if((state == STATE_DEPAN) && (FFV >= 0) && (FFV != 1)){
 			depan = (FFV);
-			#ifdef WALL_FOLLOWER_FUZZY
-			fuzzy_run(STATE_DEPAN, depan);
-			#endif
-			#ifdef WALL_FOLLOWER_PID
 			pid_run(STATE_DEPAN, depan, direction_play);
-			#endif
 		}
 		
 		// Belakang
 		else if((state == STATE_BELAKANG) && (BBV >= 0) && (BBV != 1)){
 			belakang = (BBV);
-			#ifdef WALL_FOLLOWER_FUZZY
-			fuzzy_run(STATE_BELAKANG, belakang);
-			#endif
-			#ifdef WALL_FOLLOWER_PID
 			pid_run(STATE_BELAKANG, belakang, direction_play);
-			#endif
 		}
-		#endif
+		
+}
+
+void scp_wall_follower_batu(uint8_t state, follower_direction_t direction_play){
+	
+	// READ VALUE PING 
+		BBV = ping_read(BB);
+		FRV = ping_read(FR);
+		BRV = ping_read(BR);
+		BLV = ping_read(BL);
+		FLV = ping_read(FL);
+		FFV = ping_read(FF);
+	
+	//************************* Filter for PING **********************//
+		
+		// Kiri
+		if((FLV > 0) && (BLV > 0) && (FLV != 1) && (BLV != 1) && (state == STATE_KIRI)){
+			
+			// Filter Tembok Rata
+			if((FLV <= LEBAR_PEMBACAAN) && (BLV <= LEBAR_PEMBACAAN)){
+				kiri = (FLV + BLV)/2;
+				pid_run_batu(STATE_KIRI, kiri, direction_play);
+			}
+		
+		}
+		
+		// Kanan
+		else if((FRV > 0) && (BRV > 0) && (FRV != 1) && (BRV != 1) && (state == STATE_KANAN)){
+			
+			// Filter Tembok Rata
+			if((FRV <= LEBAR_PEMBACAAN) && (BRV <= LEBAR_PEMBACAAN)){
+				kanan = (FRV + BRV)/2;
+				pid_run(STATE_KANAN, kanan, direction_play);
+			}
+		}
+		
+		// Depan
+		else if((state == STATE_DEPAN) && (FFV >= 0) && (FFV != 1)){
+			depan = (FFV);
+			pid_run(STATE_DEPAN, depan, direction_play);
+		}
+		
+		// Belakang
+		else if((state == STATE_BELAKANG) && (BBV >= 0) && (BBV != 1)){
+			belakang = (BBV);
+			pid_run(STATE_BELAKANG, belakang, direction_play);
+		}
 		
 }
 
 void scp_belok(uint8_t direction, uint16_t time){
-		#ifdef COMMUNICATION_ON
+
 		// Rotasi Clock Wise
 		if(direction == BELOK_KANAN) tx_move_rotasi(0, 0, -30, 30, 1, 10, 2);
 	
@@ -946,46 +1067,41 @@ void scp_belok(uint8_t direction, uint16_t time){
 				
 		// Delay selama rotasi -> Menyesuaikan parameter rotasi
 		HAL_Delay(time);
-		#endif
 }
 
 void scp_wall_stabilizer(uint8_t state){
 	
-	#ifdef PING_ON
 		double front_v = 0, back_v = 0;
 	
 		if(state == STATE_KANAN){
-			front_v = ping_read(FR);
-			back_v = ping_read(BR);
+			FRV = ping_read(FR);
+			BRV = ping_read(BR);
+			if((FRV >1) && (BRV > 1)){
+				front_v = FRV;
+				back_v = BRV;
+			}
 		}
 		else if(state == STATE_KIRI){
-			front_v = ping_read(FL);
-			back_v = ping_read(BL);
+			FLV = ping_read(FL);
+			BLV = ping_read(BL);
+			if((FLV >1) && (BLV > 1)){
+				front_v = FLV;
+				back_v = BLV;
+			}
 		}
 		
-		if(((FRV - back_v) < 1.0) && ((FRV - back_v) > (-1.0)) ){
-			tx_move_steady();
-		}
-		else{
-			#ifdef USE_STABILIZE_FUZZY
-			fuzzy_fuzfication_input(&rotasi_input_fuzzy, &rotasi_fuz_fic_input, (front_v-back_v));
-			fuzzy_logic_rule(&rotasi_output_fuzzy, &rotasi_fuz_fic_input, &rotasi_defuz, FUZZY_MIN_TO_MAX);
-			rotasi_res = fuzzy_defuz(&rotasi_defuz,&rotasi_fuz_fic_input);
-			tx_move_rotasi(0, 0, rotasi_res*(-1), 30, 1, 10);
-			#endif
+//		if(((FRV - back_v) < 1.0) && ((FRV - back_v) > (-1.0)) ){
+//			tx_move_steady();
+//		}
+//		else{
 			
-			#ifdef USE_STABILIZE_PID
 			for (float t = 0.0f; t <= 5; t += SAMPLE_TIME_S){
 				PIDController_Update(&pid_st, setpoint_st, (front_v-back_v));
-				tx_move_rotasi(0, 0, pid_st.out, 30, 1, 10, 2);
+				tx_move_rotasi(0, 0, pid_st.out, 60, 1, 15, 2);
 			}
-			#endif
-		}
-	#endif
+//		}
 }
 
-#ifdef HUSKY_ON
-#ifdef DYNA_ON
 bool scp_deteksi_safety_zone(uint8_t id){
 
 	// Set ke Algoritma color detection
@@ -993,35 +1109,10 @@ bool scp_deteksi_safety_zone(uint8_t id){
 		status = husky_setAlgorithm(ALGORITHM_COLOR_RECOGNITION);
 		algorithm_type = ALGORITHM_COLOR_RECOGNITION;
 	}	
-	#ifdef HUSKY_ON
 		blocks = husky_getBlocks();
 		dyna_sudut = dyna_read_posisition(&ax);
 		if(blocks.id == id){
-			
-			#ifdef DYNA_ON
-			
-				#ifdef DETEKSI_SF_FUZZY
-				fuzzy_fuzfication_input(&husky_input_fuzzy, &husky_fuz_fic_input, blocks.X_center);
-				fuzzy_logic_rule(&husky_output_fuzzy, &husky_fuz_fic_input, &husky_defuz, FUZZY_MIN_TO_MAX);
-				husky_res = fuzzy_defuz(&husky_defuz,&husky_fuz_fic_input);
-				
-				if(husky_res >= 0){
-					dyna_set_moving_speed(&ax, 50, MOVING_CW);
-					dyna_set_goal_position(&ax, dyna_sudut-husky_res);
-				}
-				else if(husky_res < 0){
-					dyna_set_moving_speed(&ax, 50, MOVING_CCW);
-					dyna_set_goal_position(&ax, dyna_sudut-husky_res);
-				}
-				
-				// Send Message
-//				if(dyna_sudut <= 1023){
-//						tx_move_jalan(((511.5-dyna_sudut)/(1023/40))*(-1), -15, 30, 15, JALAN_NORMAL);
-//				}
-				
-				#endif
-				
-				#ifdef DETEKSI_SF_PID
+						
 				for (float t = 0.0f; t <= 5; t += SAMPLE_TIME_S) {
 
 					PIDController_Update(&pid_pk, setpoint_pk, blocks.X_center);
@@ -1040,14 +1131,10 @@ bool scp_deteksi_safety_zone(uint8_t id){
 //						tx_move_jalan(pid_kf.out, -15, 30, 15, JALAN_NORMAL);
 //					}
 				}
-				#endif
-			
-			#endif
 		}
 		if(dyna_sudut >= 1020){
 			dyna_scan(&ax, 0, 100,MOVING_CW);
 		}
-		#endif
 	}
 
 bool scp_deteksi_safety_zone_2(uint8_t id){
@@ -1057,35 +1144,10 @@ bool scp_deteksi_safety_zone_2(uint8_t id){
 		status = husky_setAlgorithm(ALGORITHM_COLOR_RECOGNITION);
 		algorithm_type = ALGORITHM_COLOR_RECOGNITION;
 	}	
-	#ifdef HUSKY_ON
 		blocks = husky_getBlocks();
 		dyna_sudut = dyna_read_posisition(&ax);
 		if(blocks.id == id){
-			
-			#ifdef DYNA_ON
-			
-				#ifdef DETEKSI_SF_FUZZY
-				fuzzy_fuzfication_input(&husky_input_fuzzy, &husky_fuz_fic_input, blocks.X_center);
-				fuzzy_logic_rule(&husky_output_fuzzy, &husky_fuz_fic_input, &husky_defuz, FUZZY_MIN_TO_MAX);
-				husky_res = fuzzy_defuz(&husky_defuz,&husky_fuz_fic_input);
-				
-				if(husky_res >= 0){
-					dyna_set_moving_speed(&ax, 50, MOVING_CW);
-					dyna_set_goal_position(&ax, dyna_sudut-husky_res);
-				}
-				else if(husky_res < 0){
-					dyna_set_moving_speed(&ax, 50, MOVING_CCW);
-					dyna_set_goal_position(&ax, dyna_sudut-husky_res);
-				}
-				
-				// Send Message
-				if(dyna_sudut <= 1023){
-						tx_move_jalan(((511.5-dyna_sudut)/(1023/40))*(-1), -15, 30, 15, JALAN_NORMAL);
-				}
-				
-				#endif
-				
-				#ifdef DETEKSI_SF_PID
+						
 				for (float t = 0.0f; t <= 5; t += SAMPLE_TIME_S) {
 
 					PIDController_Update(&pid_pk, setpoint_pk, blocks.X_center);
@@ -1104,20 +1166,13 @@ bool scp_deteksi_safety_zone_2(uint8_t id){
 						tx_move_jalan(pid_kf.out, -15, 30, 15, JALAN_NORMAL, 2);
 					}
 				}
-				#endif
-			
-			#endif
 		}
 		if(dyna_sudut >= 1020){
 			dyna_scan(&ax, 0, 100,MOVING_CW);
 		}
-		#endif
 	}
-#endif
-#endif
 	
-#ifdef HUSKY_ON
-#ifdef DYNA_ON
+
 bool scp_deteksi_korban(uint8_t id, follower_direction_t dir){
 
 	// Set ke Algoritma color detection
@@ -1125,7 +1180,6 @@ bool scp_deteksi_korban(uint8_t id, follower_direction_t dir){
 		status = husky_setAlgorithm(ALGORITHM_COLOR_RECOGNITION);
 		algorithm_type = ALGORITHM_COLOR_RECOGNITION;
 	}	
-	#ifdef HUSKY_ON
 		blocks = husky_getBlocks();
 		dyna_sudut = dyna_read_posisition(&ax);
 		if(blocks.id == id){	
@@ -1135,14 +1189,9 @@ bool scp_deteksi_korban(uint8_t id, follower_direction_t dir){
 			dyna_scan(&ax, 0, 100,MOVING_CW);
 			return false;
 		}
-		#endif
+		return false;
 	}
-#endif
-#endif
 	
-	
-#ifdef HUSKY_ON
-#ifdef DYNA_ON
 bool scp_korban_follower(uint8_t id, follower_direction_t dir){
 
 	// Set ke Algoritma color detection
@@ -1150,29 +1199,10 @@ bool scp_korban_follower(uint8_t id, follower_direction_t dir){
 		status = husky_setAlgorithm(ALGORITHM_COLOR_RECOGNITION);
 		algorithm_type = ALGORITHM_COLOR_RECOGNITION;
 	}	
-	#ifdef HUSKY_ON
 		blocks = husky_getBlocks();
 		dyna_sudut = dyna_read_posisition(&ax);
 		if(blocks.id == id){
 			
-			#ifdef DYNA_ON
-			
-				#ifdef DETEKSI_KORBAN_FUZZY
-				fuzzy_fuzfication_input(&husky_input_fuzzy, &husky_fuz_fic_input, blocks.X_center);
-				fuzzy_logic_rule(&husky_output_fuzzy, &husky_fuz_fic_input, &husky_defuz, FUZZY_MIN_TO_MAX);
-				husky_res = fuzzy_defuz(&husky_defuz,&husky_fuz_fic_input);
-				
-				if(husky_res >= 0){
-					dyna_set_moving_speed(&ax, 50, MOVING_CW);
-					dyna_set_goal_position(&ax, dyna_sudut-husky_res);
-				}
-				else if(husky_res < 0){
-					dyna_set_moving_speed(&ax, 50, MOVING_CCW);
-					dyna_set_goal_position(&ax, dyna_sudut-husky_res);
-				}	
-				#endif
-				
-				#ifdef DETEKSI_KORBAN_PID
 				for (float t = 0.01f; t <= 5; t += SAMPLE_TIME_S) {
 
 					PIDController_Update(&pid_pk, setpoint_pk, blocks.X_center);
@@ -1190,19 +1220,9 @@ bool scp_korban_follower(uint8_t id, follower_direction_t dir){
 						tx_move_jalan(pid_kf.out, 15, 30, 15, JALAN_NORMAL, 2);
 					}
 				}
-				return true;
-				#endif
-			
-			#endif
 		}
-		return false;
-		#endif
 	}
-#endif
-#endif
 
-#ifdef HUSKY_ON
-#ifdef DYNA_ON
 void scp_deteksi_arena(uint8_t id, uint16_t angle){
 	
 	// Set ke Algoritma color detection
@@ -1214,14 +1234,10 @@ void scp_deteksi_arena(uint8_t id, uint16_t angle){
 	dyna_calibrate(&ax);
 	dyna_set_goal_position(&ax, angle);
 }
-#endif
-#endif
 
-#ifdef COMMUNICATION_ON
 void scp_mode_jalan(mode_jalan_t mode){
 	tx_move_jalan(0, 15, 0, 5, mode, 2);
 }
-#endif
 
 void scp_kepala_move(dynamixel_kepala_direction_t dir){
 	dyna_set_moving_speed(&ax, 1023, MOVING_CW);
@@ -1233,6 +1249,22 @@ void scp_kepala_move(dynamixel_kepala_direction_t dir){
 	else if(dir == KEPALA_KIRI) dyna_set_goal_position(&ax, 785);
 }
 
+void pid_run_belakang(uint8_t state_jalan, double input, follower_direction_t dir){
+		if((state_jalan == STATE_BELAKANG)&&(input > 0.0)){
+			PIDController_Update(&pid_wf, setpoint_wf_y, input);
+			if(dir == DIRECTION_KANAN) tx_move_jalan(20, pid_wf.out, 60, 13, JALAN_NORMAL,1);
+			else if(dir == DIRECTION_KIRI) tx_move_jalan(-20, pid_wf.out, 60, 13, JALAN_NORMAL,1);
+		}
+}
+
+void scp_wall_follower_belakang(void){
+	BBV = ping_read(BB);
+	if((BBV >= 0) && (BBV != 1)){
+			belakang = (BBV);
+			pid_run_belakang(STATE_BELAKANG, belakang, DIRECTION_KIRI);
+		}
+	HAL_Delay(5);
+}
 //***************************************************************************************************/
 //******************************* IMPLEMENTASI ALGORITMA JALAN **************************************/
 home_typedef_t Home_Identification(void){
@@ -1244,10 +1276,7 @@ home_typedef_t Home_Identification(void){
 		FLV = ping_read(FL);
 		FFV = ping_read(FF);
 		
-		double kanan = (BRV + FRV)/2;
-		double kiri = (BLV + FLV)/2;
-		
-		if((kiri < 10) && (kiri > 1)){
+		if((kiri < 15) && (kiri > 1)){
 			return KOSONG_KANAN;
 		}
 		else{
@@ -1258,19 +1287,19 @@ home_typedef_t Home_Identification(void){
 bool Pencarian_Korban_1(void){
 	while(true){
 		if(scp_deteksi_korban(1, DIRECTION_DEPAN)){
-			tx_capit(STANDBY);
+			tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 			FFV = ping_read(FF);
 			if(FFV <= 5){
 				dyna_calibrate(&ax);
 				dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
-				tx_capit(CAPIT_START);
+				tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 				break;
 			}			
 			else tx_move_jalan(0, 10, 30, 15, JALAN_NORMAL, 2);
 		}
 	}
 	while(!feeding.capit) HAL_Delay(10);
-	tx_capit(EVAKUASI);
+	tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 	dyna_calibrate(&ax);
 	dyna_set_goal_position(&ax,300);
 	
@@ -1300,7 +1329,7 @@ bool Penyelamatan_Korban_1(void){
 				tx_move_jalan(5, 15, 0, 15, JALAN_NORMAL, 2);
 				dyna_calibrate(&ax);
 				dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
-				tx_capit(HOME_CAPIT);
+				tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 				break;
 			}
 		}
@@ -1317,13 +1346,13 @@ bool Jalan_R5(void){
 			dyna_set_goal_position(&ax,600);
 			if(scp_deteksi_korban(1,DIRECTION_DEPAN)){
 			// Ambil Korban
-				tx_capit(STANDBY);
+				tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 				FLV = ping_read(FL);
 				BLV = ping_read(BL);
 				if((BLV +FLV)/2 <= 5){
 					dyna_calibrate(&ax);
 					dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
-					tx_capit(CAPIT_START);
+					tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 					break;
 				}			
 				else tx_move_jalan(0, 10, 30, 15, JALAN_KELERENG, 2);
@@ -1341,7 +1370,7 @@ bool Penyelamatan_Korban_2(void){
 					// Pembersihan koral
 					tx_serok(MOVE_DEPAN);
 					dyna_calibrate(&ax);
-					tx_capit(HOME_CAPIT);
+					tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 					break;
 				}
 		}
@@ -1354,18 +1383,18 @@ bool Jalan_R6(void){
 			dyna_calibrate(&ax);
 			dyna_set_goal_position(&ax, 300);
 			if(scp_deteksi_korban(1, DIRECTION_DEPAN)){
-				tx_capit(STANDBY);
+				tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 				FRV = ping_read(FR);
 				BRV = ping_read(BR);
 				if((BRV +FRV)/2 <= 5){
 					dyna_calibrate(&ax);
 					dyna_set_goal_position(&ax, 600);
-					tx_capit(CAPIT_START);
+					tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 					break;
 				}
 				else tx_move_jalan(0, 10, 30, 15, JALAN_KELERENG, 2);
 			}
-			tx_capit(EVAKUASI);
+			tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 			dyna_calibrate(&ax);
 		}
 	}
@@ -1379,7 +1408,7 @@ bool Penyelamatan_Korban_3(void){
 					// Pembersihan koral
 					tx_serok(MOVE_DEPAN);
 					dyna_calibrate(&ax);
-					tx_capit(HOME_CAPIT);
+					tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 					break;
 				}
 		}
@@ -1391,19 +1420,19 @@ bool Penyelamatan_Korban_3(void){
 bool Pencarian_Korban_4(void){
 	while(true){
 		if(scp_deteksi_korban(1, DIRECTION_DEPAN)){
-			tx_capit(STANDBY);
+			tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 			FFV = ping_read(FF);
 			if(FFV <= 5){
 				dyna_calibrate(&ax);
 				dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
-				tx_capit(CAPIT_START);
+				tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 				break;
 			}			
 			else scp_deteksi_korban(1, DIRECTION_DEPAN);
 		}
 	}
 	while(!feeding.capit) HAL_Delay(10);
-	tx_capit(EVAKUASI);
+	tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 	dyna_calibrate(&ax);
 	dyna_set_goal_position(&ax,600);
 }
@@ -1427,7 +1456,7 @@ bool Penyelamatan_Korban_4(void){
 					tx_serok(MOVE_DEPAN);
 					dyna_calibrate(&ax);
 					dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
-					tx_capit(HOME_CAPIT);
+					tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 					break;
 				}
 		}
@@ -1437,19 +1466,19 @@ bool Penyelamatan_Korban_4(void){
 bool Pencarian_Korban_5(void){
 	while(true){
 		if(scp_deteksi_korban(1, DIRECTION_DEPAN)){
-			tx_capit(STANDBY);
+			tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 			FFV = ping_read(FF);
 			if(FFV <= 5){
 				dyna_calibrate(&ax);
 				dyna_endless_turn(&ax, 1000, 100, MOVING_CW);
-				tx_capit(CAPIT_START);
+				tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 				break;
 			}			
 			else scp_deteksi_korban(1, DIRECTION_DEPAN);
 		}
 	}
 	while(!feeding.capit) HAL_Delay(10);
-	tx_capit(EVAKUASI);
+	tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);;
 	dyna_calibrate(&ax);
 	dyna_set_goal_position(&ax,600);
 }
@@ -1471,7 +1500,7 @@ bool Penyelamatan_Korban_5(void){
 				FRV = ping_read(FR);
 				BRV = ping_read(BR);
 				if((BRV +FRV)/2 <= 5){
-					tx_capit(CAPIT_START);
+					tx_capit(AMBIL_KORBAN, CAPIT_KORBAN, 15);
 					break;
 				}
 				else tx_move_jalan(0, 10, 30, 15, JALAN_KELERENG, 2);

@@ -5,7 +5,7 @@
 <h2>Tool Versions:</h2>
 IDE-Version: µVision V5.36.0.0
 Copyright (C) 2021 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: greatreyhan ., ., LIC=QF82M-XFW0C-GKZBG-V2GVS-IMF3H-GV98Q
+License Information: greatreyhan greatreyhan, greatreyhan, LIC=SDA0P-MBZUJ-TG67T-RYQLM-E8BHU-67F4A
  
 Tool Versions:
 Toolchain:       MDK-ARM Plus  Version: 5.36.0.0
@@ -21,13 +21,66 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.9.0
 Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
-D:\Home\STM32\Kepala_Fuzzy-main\MDK-ARM\Kepala_Fuzzy.uvprojx
-Project File Date:  04/11/2023
+D:\STM32\kepala\Kepala-V2\MDK-ARM\Kepala_Fuzzy.uvprojx
+Project File Date:  04/19/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Kepala_Fuzzy'
-"Kepala_Fuzzy\Kepala_Fuzzy.axf" - 0 Error(s), 0 Warning(s).
+compiling main.c...
+..\..\Kepala-V2\Ping_driver.h(23): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala-V2\Komunikasi.h(103): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala-V2\Huskylens_driver.h(172): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala-V2\Dynamixel.h(74): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\Kepala-V2\PID_driver.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/main.c(137): warning:  #188-D: enumerated type mixed with another type
+  home_typedef_t home_direction = 0x00;
+../Core/Src/main.c(549): warning:  #128-D: loop is not reachable
+    while (1)
+../Core/Src/main.c(1138): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_safety_zone" 
+  	}
+../Core/Src/main.c(1173): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_safety_zone_2" 
+  	}
+../Core/Src/main.c(1224): warning:  #940-D: missing return statement at end of non-void function "scp_korban_follower" 
+  	}
+../Core/Src/main.c(1306): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_1" 
+  }
+../Core/Src/main.c(1314): warning:  #940-D: missing return statement at end of non-void function "Jalan_R2" 
+  }
+../Core/Src/main.c(1320): warning:  #940-D: missing return statement at end of non-void function "Jalan_R3" 
+  }
+../Core/Src/main.c(1340): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_1" 
+  }
+../Core/Src/main.c(1363): warning:  #940-D: missing return statement at end of non-void function "Jalan_R5" 
+  }
+../Core/Src/main.c(1378): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_2" 
+  }
+../Core/Src/main.c(1401): warning:  #940-D: missing return statement at end of non-void function "Jalan_R6" 
+  }
+../Core/Src/main.c(1418): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_3" 
+  }
+../Core/Src/main.c(1438): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_4" 
+  }
+../Core/Src/main.c(1448): warning:  #940-D: missing return statement at end of non-void function "Pendakian_Tangga" 
+  }
+../Core/Src/main.c(1464): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_4" 
+  }
+../Core/Src/main.c(1484): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_5" 
+  }
+../Core/Src/main.c(1493): warning:  #940-D: missing return statement at end of non-void function "Penyesuaian_R10" 
+  }
+../Core/Src/main.c(1509): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_5" 
+  }
+../Core/Src/main.c: 24 warnings, 0 errors
+linking...
+Program Size: Code=15518 RO-data=458 RW-data=152 ZI-data=2728  
+FromELF: creating hex file...
+"Kepala_Fuzzy\Kepala_Fuzzy.axf" - 0 Error(s), 24 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -44,14 +97,14 @@ Package Vendor: Keil
 
 <h2>Collection of Component include folders:</h2>
   .\RTE\_Kepala_Fuzzy
-  C:\Users\greatreyhan\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include
-  C:\Users\greatreyhan\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+  C:\Users\LENOVO\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include
+  C:\Users\LENOVO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

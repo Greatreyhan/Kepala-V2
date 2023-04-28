@@ -70,8 +70,8 @@ bool tx_statis(int16_t pos_x, int16_t pos_y, int16_t pos_z){
 	else return false;
 }
 
-bool tx_capit(type_capit_t cmd){
-	uint8_t capit[16] = {0xA5, 0x5A, 0x08, cmd, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+bool tx_capit(type_capit_t cmd, type_capit_status_t status, int8_t speed_capit){
+	uint8_t capit[16] = {0xA5, 0x5A, 0x08, cmd, status, speed_capit, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	capit[15] = checksum_generator(capit, 16);
 		
 	if(HAL_UART_Transmit(huart, capit, 16, TIMEOUT) == HAL_OK) return true;
@@ -243,6 +243,12 @@ void rx_get(com_get_t* get){
 				
 				// Check command
 				if(rxbuf_get[i+3]) get->cmd = rxbuf_get[i+3];
+
+				// Check command
+				if(rxbuf_get[i+4]) get->status = rxbuf_get[i+4];
+				
+				// Check command
+				if(rxbuf_get[i+4]) get->speed_capit = rxbuf_get[i+5];
 				
 				HAL_UART_Transmit(huart, txbuf, 3, TIMEOUT);
 				get->type = PLAY_CAPIT;
