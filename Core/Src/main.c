@@ -410,7 +410,12 @@ int main(void)
 //		tx_move_rotasi(0, 0, 20, 60, 1, 15, 5);
 //		scp_wall_stabilizer(STATE_KIRI);
 		HAL_Delay(5);
-		tx_capit(AMBIL_KORBAN, 0x00, 15); 
+		tx_capit(AMBIL_KORBAN, 0x00, 20); 
+		HAL_Delay(5000);
+		tx_capit(HOME_CAPIT, 0x00, 20);
+		HAL_Delay(5000);
+		tx_capit(PENYELAMATAN_KORBAN, 0x00, 20); 
+		HAL_Delay(5000);
 	}
 	#endif
 	

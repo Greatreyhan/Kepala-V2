@@ -248,7 +248,7 @@ void rx_get(com_get_t* get){
 				if(rxbuf_get[i+4]) get->status = rxbuf_get[i+4];
 				
 				// Check command
-				if(rxbuf_get[i+4]) get->speed_capit = rxbuf_get[i+5];
+				if(rxbuf_get[i+5]) get->speed_capit = rxbuf_get[i+5];
 				
 				HAL_UART_Transmit(huart, txbuf, 3, TIMEOUT);
 				get->type = PLAY_CAPIT;
