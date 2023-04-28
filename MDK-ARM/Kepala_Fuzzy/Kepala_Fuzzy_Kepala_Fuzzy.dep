@@ -70,7 +70,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x643F8C08)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x6025318C)
 F (..\Fuzzy.h)(0x643F8C08)()
 F (..\Komunikasi.c)(0x644B7F48)(--c99 -c --cpu Cortex-M4.fp.sp -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\..\Kepala-V2-I.\RTE\_Kepala_Fuzzy-IC:\Users\LENOVO\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-IC:\Users\LENOVO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o kepala_fuzzy\komunikasi.o --omf_browse kepala_fuzzy\komunikasi.crf --depend kepala_fuzzy\komunikasi.d)
-I (..\Komunikasi.h)(0x644B801E)
+I (..\Komunikasi.h)(0x644B878C)
 I (../Core/Inc/main.h)(0x643F8C08)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x643F8C08)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x643F8C08)
@@ -103,7 +103,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h)(0x643F8C08)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x643F8C08)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x643F8C08)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x6025318C)
-F (..\Komunikasi.h)(0x644B801E)()
+F (..\Komunikasi.h)(0x644B878C)()
 F (..\Ping_driver.c)(0x643F8C08)(--c99 -c --cpu Cortex-M4.fp.sp -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\..\Kepala-V2-I.\RTE\_Kepala_Fuzzy-IC:\Users\LENOVO\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-IC:\Users\LENOVO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o kepala_fuzzy\ping_driver.o --omf_browse kepala_fuzzy\ping_driver.crf --depend kepala_fuzzy\ping_driver.d)
 I (..\Ping_driver.h)(0x643F8C08)
 I (../Core/Inc/main.h)(0x643F8C08)
@@ -211,7 +211,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x643F8C08)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x643F8C08)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025318E)
 F (..\Dynamixel.h)(0x643F8C08)()
-F (../Core/Src/main.c)(0x644B8069)(--c99 -c --cpu Cortex-M4.fp.sp -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\..\Kepala-V2-I.\RTE\_Kepala_Fuzzy-IC:\Users\LENOVO\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-IC:\Users\LENOVO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o kepala_fuzzy\main.o --omf_browse kepala_fuzzy\main.crf --depend kepala_fuzzy\main.d)
+F (../Core/Src/main.c)(0x644B8430)(--c99 -c --cpu Cortex-M4.fp.sp -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\..\Kepala-V2-I.\RTE\_Kepala_Fuzzy-IC:\Users\LENOVO\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-IC:\Users\LENOVO\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx-o kepala_fuzzy\main.o --omf_browse kepala_fuzzy\main.crf --depend kepala_fuzzy\main.d)
 I (../Core/Inc/main.h)(0x643F8C08)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x643F8C08)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x643F8C08)
@@ -246,7 +246,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x643F8C08)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60253184)
 I (..\..\Kepala-V2\Ping_driver.h)(0x643F8C08)
 I (..\..\Kepala-V2\DWT_Delay.h)(0x643F8C08)
-I (..\..\Kepala-V2\Komunikasi.h)(0x644B801E)
+I (..\..\Kepala-V2\Komunikasi.h)(0x644B878C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x6025318C)
 I (..\..\Kepala-V2\Huskylens_driver.h)(0x643F8C08)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025318E)

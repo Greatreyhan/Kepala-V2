@@ -53,6 +53,7 @@ typedef enum{
 typedef enum{
 	AMBIL_KORBAN = 0x01U,
 	PENYELAMATAN_KORBAN = 0x02U,
+	HOME_CAPIT = 0x03U,
 }type_capit_t;
 
 typedef enum{

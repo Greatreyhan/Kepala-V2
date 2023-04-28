@@ -408,8 +408,9 @@ int main(void)
 	while(1){
 //		tx_move_jalan(-20, pid_wf.out, 50, SPEED_WALKING, JALAN_NORMAL,1);
 //		tx_move_rotasi(0, 0, 20, 60, 1, 15, 5);
-		scp_wall_stabilizer(STATE_KIRI);
+//		scp_wall_stabilizer(STATE_KIRI);
 		HAL_Delay(5);
+		tx_capit(AMBIL_KORBAN, 0x00, 15); 
 	}
 	#endif
 	

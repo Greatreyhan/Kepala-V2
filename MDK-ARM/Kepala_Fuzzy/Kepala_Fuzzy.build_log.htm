@@ -27,10 +27,26 @@ Project File Date:  04/19/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Kepala_Fuzzy'
+compiling Komunikasi.c...
+..\Komunikasi.h(104): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Komunikasi.c(151): warning:  #188-D: enumerated type mixed with another type
+  				get->mode_jalan = rxbuf_get[i+10];
+..\Komunikasi.c(169): warning:  #188-D: enumerated type mixed with another type
+  				get->skew_mode = rxbuf_get[i+4];
+..\Komunikasi.c(245): warning:  #188-D: enumerated type mixed with another type
+  				if(rxbuf_get[i+3]) get->cmd = rxbuf_get[i+3];
+..\Komunikasi.c(248): warning:  #188-D: enumerated type mixed with another type
+  				if(rxbuf_get[i+4]) get->status = rxbuf_get[i+4];
+..\Komunikasi.c(262): warning:  #188-D: enumerated type mixed with another type
+  				if(rxbuf_get[i+3]) get->move = rxbuf_get[i+3];
+..\Komunikasi.c(271): warning:  #1-D: last line of file ends without a newline
+  }
+..\Komunikasi.c: 7 warnings, 0 errors
 compiling main.c...
 ..\..\Kepala-V2\Ping_driver.h(23): warning:  #1-D: last line of file ends without a newline
   #endif
-..\..\Kepala-V2\Komunikasi.h(103): warning:  #1-D: last line of file ends without a newline
+..\..\Kepala-V2\Komunikasi.h(104): warning:  #1-D: last line of file ends without a newline
   #endif
 ..\..\Kepala-V2\Huskylens_driver.h(172): warning:  #1-D: last line of file ends without a newline
   #endif
@@ -40,47 +56,49 @@ compiling main.c...
   #endif
 ../Core/Src/main.c(137): warning:  #188-D: enumerated type mixed with another type
   home_typedef_t home_direction = 0x00;
-../Core/Src/main.c(549): warning:  #128-D: loop is not reachable
+../Core/Src/main.c(413): warning:  #188-D: enumerated type mixed with another type
+  		tx_capit(AMBIL_KORBAN, 0x00, 15); 
+../Core/Src/main.c(550): warning:  #128-D: loop is not reachable
     while (1)
-../Core/Src/main.c(1138): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_safety_zone" 
+../Core/Src/main.c(1139): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_safety_zone" 
   	}
-../Core/Src/main.c(1173): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_safety_zone_2" 
+../Core/Src/main.c(1174): warning:  #940-D: missing return statement at end of non-void function "scp_deteksi_safety_zone_2" 
   	}
-../Core/Src/main.c(1224): warning:  #940-D: missing return statement at end of non-void function "scp_korban_follower" 
+../Core/Src/main.c(1225): warning:  #940-D: missing return statement at end of non-void function "scp_korban_follower" 
   	}
-../Core/Src/main.c(1306): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_1" 
+../Core/Src/main.c(1307): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_1" 
   }
-../Core/Src/main.c(1314): warning:  #940-D: missing return statement at end of non-void function "Jalan_R2" 
+../Core/Src/main.c(1315): warning:  #940-D: missing return statement at end of non-void function "Jalan_R2" 
   }
-../Core/Src/main.c(1320): warning:  #940-D: missing return statement at end of non-void function "Jalan_R3" 
+../Core/Src/main.c(1321): warning:  #940-D: missing return statement at end of non-void function "Jalan_R3" 
   }
-../Core/Src/main.c(1340): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_1" 
+../Core/Src/main.c(1341): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_1" 
   }
-../Core/Src/main.c(1363): warning:  #940-D: missing return statement at end of non-void function "Jalan_R5" 
+../Core/Src/main.c(1364): warning:  #940-D: missing return statement at end of non-void function "Jalan_R5" 
   }
-../Core/Src/main.c(1378): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_2" 
+../Core/Src/main.c(1379): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_2" 
   }
-../Core/Src/main.c(1401): warning:  #940-D: missing return statement at end of non-void function "Jalan_R6" 
+../Core/Src/main.c(1402): warning:  #940-D: missing return statement at end of non-void function "Jalan_R6" 
   }
-../Core/Src/main.c(1418): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_3" 
+../Core/Src/main.c(1419): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_3" 
   }
-../Core/Src/main.c(1438): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_4" 
+../Core/Src/main.c(1439): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_4" 
   }
-../Core/Src/main.c(1448): warning:  #940-D: missing return statement at end of non-void function "Pendakian_Tangga" 
+../Core/Src/main.c(1449): warning:  #940-D: missing return statement at end of non-void function "Pendakian_Tangga" 
   }
-../Core/Src/main.c(1464): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_4" 
+../Core/Src/main.c(1465): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_4" 
   }
-../Core/Src/main.c(1484): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_5" 
+../Core/Src/main.c(1485): warning:  #940-D: missing return statement at end of non-void function "Pencarian_Korban_5" 
   }
-../Core/Src/main.c(1493): warning:  #940-D: missing return statement at end of non-void function "Penyesuaian_R10" 
+../Core/Src/main.c(1494): warning:  #940-D: missing return statement at end of non-void function "Penyesuaian_R10" 
   }
-../Core/Src/main.c(1509): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_5" 
+../Core/Src/main.c(1510): warning:  #940-D: missing return statement at end of non-void function "Penyelamatan_Korban_5" 
   }
-../Core/Src/main.c: 24 warnings, 0 errors
+../Core/Src/main.c: 25 warnings, 0 errors
 linking...
-Program Size: Code=15518 RO-data=458 RW-data=152 ZI-data=2728  
+Program Size: Code=11566 RO-data=458 RW-data=36 ZI-data=2724  
 FromELF: creating hex file...
-"Kepala_Fuzzy\Kepala_Fuzzy.axf" - 0 Error(s), 24 Warning(s).
+"Kepala_Fuzzy\Kepala_Fuzzy.axf" - 0 Error(s), 32 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -104,7 +122,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>
