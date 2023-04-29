@@ -153,32 +153,32 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>BBV</ItemText>
+          <ItemText>FRV</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>FRV</ItemText>
+          <ItemText>BRV</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>BRV</ItemText>
+          <ItemText>BLV</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>BLV</ItemText>
+          <ItemText>FLV</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>FLV</ItemText>
+          <ItemText>FFV</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>FFV</ItemText>
+          <ItemText>BBV</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
