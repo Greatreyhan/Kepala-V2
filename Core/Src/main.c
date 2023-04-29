@@ -42,22 +42,22 @@
 //*************************** DEBUG MODE **********************************//
 //#define TEST_HUSKY
 //#define TEST_DYNA
-//#define TEST_PING
+#define TEST_PING
 //#define TEST_COMMUNICATION
 //#define MAIN_PROGRAM
-#define MAIN_PROGRAM_STACK
+//#define MAIN_PROGRAM_STACK
 //#define TEST_BENCH
 
 //*************************** VARIABEL JALAN ********************************//
-#define STEP_0
-//#define STEP_1
-//#define STEP_2
-//#define STEP_3
-//#define STEP_4
-//#define STEP_5
-//#define STEP_6
-//#define STEP_7
-//#define STEP_8
+//#define STEP_0
+#define STEP_1
+#define STEP_2
+#define STEP_3
+#define STEP_4
+#define STEP_5
+#define STEP_6
+#define STEP_7
+#define STEP_8
 //#define STEP_9
 //#define STEP_10
 //*************************** MODE KALKULASI ********************************//			
@@ -257,6 +257,8 @@ void scp_penurunan_korban(void);
 void scp_kepala_move(dynamixel_kepala_direction_t dir);
 bool scp_korban_follower(uint8_t id, follower_direction_t dir);
 void scp_wall_follower_belakang(void);
+void scp_ambil_korban(void);
+void scp_turun_korban(void);
 
 //****************************** PROTOTYPE ALGORITMA JALAN ****************************//
 home_typedef_t Home_Identification(void);
@@ -322,11 +324,14 @@ int main(void)
 	komunikasi_init(&huart2);
 	rx_start();
 	tx_move_steady();
-	HAL_Delay(1000);
+	tx_capit(HOME_CAPIT, 0x00, 20);
+	HAL_Delay(2000);
 	while(!feeding.statis){
-		tx_statis(80,70,-100); 
+		tx_capit(HOME_CAPIT, 0x00, 20);
+		tx_statis(80,70,-80); 
 		HAL_Delay(10);
 	}
+	
 	#endif
 	
 	//********************** Config For Huskylens *************************/
@@ -380,7 +385,7 @@ int main(void)
 	PIDController_Init(&pid_pk);
 	
 	// PID untuk Wall Follower
-	pid_wf.Kp = 3; 				pid_wf.Ki = 0; 				pid_wf.Kd = 3; 					pid_wf.tau = 0.02;
+	pid_wf.Kp = 2; 				pid_wf.Ki = 0; 				pid_wf.Kd = 2; 					pid_wf.tau = 0.02;
 	pid_wf.limMax = 20; 	pid_wf.limMin = -20; 	pid_wf.limMaxInt = 5; 	pid_wf.limMinInt = -5;
 	pid_wf.T_sample = SAMPLE_TIME_S;
 	PIDController_Init(&pid_wf);
@@ -392,7 +397,7 @@ int main(void)
 	PIDController_Init(&pid_st);
 	
 	// PID untuk Jalan Follower Korban
-	pid_kf.Kp = 3; 				pid_kf.Ki = 0; 				pid_kf.Kd = 1; 					pid_kf.tau = 0.02;
+	pid_kf.Kp = 2; 				pid_kf.Ki = 0; 				pid_kf.Kd = 1; 					pid_kf.tau = 0.02;
 	pid_kf.limMax = 20; 	pid_kf.limMin = -20; 	pid_kf.limMaxInt = 5; 	pid_kf.limMinInt = -5;
 	pid_kf.T_sample = SAMPLE_TIME_S;
 	PIDController_Init(&pid_kf);
@@ -406,16 +411,17 @@ int main(void)
 	//----- TEST STEP
 	#ifdef STEP_0
 	while(1){
-//		tx_move_jalan(-20, pid_wf.out, 50, SPEED_WALKING, JALAN_NORMAL,1);
-//		tx_move_rotasi(0, 0, 20, 60, 1, 15, 5);
-//		scp_wall_stabilizer(STATE_KIRI);
 		HAL_Delay(5);
-		tx_capit(AMBIL_KORBAN, 0x00, 20); 
-		HAL_Delay(5000);
-		tx_capit(HOME_CAPIT, 0x00, 20);
-		HAL_Delay(5000);
-		tx_capit(PENYELAMATAN_KORBAN, 0x00, 20); 
-		HAL_Delay(5000);
+		dyna_calibrate(&ax);
+		tx_capit(HOME_CAPIT, 0x00, 15);
+		HAL_Delay(3000);
+		tx_capit(AMBIL_KORBAN, 0x00, 15); 
+		HAL_Delay(3000);
+		dyna_calibrate(&ax);
+		scp_kepala_move(KEPALA_BELAKANG);
+		HAL_Delay(1000);
+		tx_capit(PENYELAMATAN_KORBAN, 0x00, 15); 
+		HAL_Delay(3000);
 	}
 	#endif
 	
@@ -454,19 +460,23 @@ int main(void)
 	//3. Pencarian korban K1
 	#ifdef STEP_3
 	while(1){
-		FFV = ping_read(FF);
-		if(FFV <= 15){
-			tx_move_steady();
-			break;
-		} 
-		else scp_korban_follower(1, DIRECTION_DEPAN);
+		if(scp_korban_follower(1, DIRECTION_DEPAN) == true) break;
 	}
 	#endif
 	
 	// 4. Pengangkatan Korban
 	#ifdef STEP_4
+		while(1){
+			scp_kepala_move(KEPALA_BELAKANG);
+			scp_ambil_korban();
+			tx_move_steady();
+			tx_statis(80,70,-100); 
+			tx_move_steady();
+			break;
+		}
 	#endif
-	// 5. Mundur/Maju Sesuai dengan batas belakan
+	
+	// 5. Mundur/Maju Sesuai dengan batas belakang
 	#ifdef STEP_5
 	while(1){
 			HAL_Delay(10);
@@ -486,13 +496,14 @@ int main(void)
 	while(1){
 		FFV = ping_read(FF);
 		FLV = ping_read(FL);
-		BLV = ping_read(BL);
+		// Sementara diganti FL (BL)
+		BLV = ping_read(FL);
 		if((FLV > 1)&&(BLV > 1) && (FFV > 1)){
-			if((FLV <= 10)&&(BLV <= 10) && (FFV >= 15)){
-				tx_move_steady();
-				break;
-			}
-			else scp_wall_follower_belakang();
+//			if((FLV <= 10)&&(BLV <= 10) && (FFV >= 15)){
+//				tx_move_steady();
+//				break;
+//			}
+			 scp_wall_follower_belakang();
 		}
 	}
 	#endif
@@ -1208,7 +1219,9 @@ bool scp_korban_follower(uint8_t id, follower_direction_t dir){
 		blocks = husky_getBlocks();
 		dyna_sudut = dyna_read_posisition(&ax);
 		if(blocks.id == id){
-			
+				FFV = ping_read(FF);
+				FRV = ping_read(FR);
+				BRV = ping_read(BR);
 				for (float t = 0.01f; t <= 5; t += SAMPLE_TIME_S) {
 
 					PIDController_Update(&pid_pk, setpoint_pk, blocks.X_center);
@@ -1222,10 +1235,22 @@ bool scp_korban_follower(uint8_t id, follower_direction_t dir){
 						dyna_set_goal_position(&ax, dyna_sudut+pid_pk.out);
 					}
 					
-					if(dyna_sudut <= 1023){
-						tx_move_jalan(pid_kf.out, 15, 30, 15, JALAN_NORMAL, 2);
+					if((blocks.X_center >= 140) && (blocks.X_center <= 170)){
+						if(FFV <= 15){
+							tx_move_jalan(pid_kf.out, 5, 30, 15, JALAN_NORMAL, 2);
+						} 
+						else{
+							tx_move_jalan(pid_kf.out, 0, 30, 15, JALAN_NORMAL, 2);
+						}
+						if( (dyna_sudut >= 510) && (dyna_sudut >= 530) && (FRV >= 40) && (BRV >= 40) ) return true;
+						else return false;
 					}
+					else{
+						tx_move_steady();
+					}
+					return false;
 				}
+				return false;
 		}
 	}
 
@@ -1251,7 +1276,7 @@ void scp_kepala_move(dynamixel_kepala_direction_t dir){
 	HAL_Delay(500);
 	if(dir == KEPALA_DEPAN) dyna_calibrate(&ax);
 	else if(dir == KEPALA_KANAN) dyna_set_goal_position(&ax, 261);
-	else if(dir == KEPALA_BELAKANG) dyna_endless_turn(&ax, 450, 1023, MOVING_CW);
+	else if(dir == KEPALA_BELAKANG) dyna_endless_turn(&ax, 500, 1023, MOVING_CW);
 	else if(dir == KEPALA_KIRI) dyna_set_goal_position(&ax, 785);
 }
 
@@ -1270,6 +1295,25 @@ void scp_wall_follower_belakang(void){
 			pid_run_belakang(STATE_BELAKANG, belakang, DIRECTION_KIRI);
 		}
 	HAL_Delay(5);
+}
+
+void scp_ambil_korban(void){
+		tx_capit(HOME_CAPIT, 0x00, 15);
+		HAL_Delay(3000);
+		tx_capit(AMBIL_KORBAN, 0x00, 15); 
+		HAL_Delay(3000);
+		dyna_calibrate(&ax);
+		scp_kepala_move(KEPALA_BELAKANG);
+		HAL_Delay(500);
+}
+
+void scp_turun_korban(void){
+		dyna_calibrate(&ax);
+		tx_capit(HOME_CAPIT, 0x00, 15);
+		HAL_Delay(3000);
+		tx_capit(PENYELAMATAN_KORBAN, 0x00, 15); 
+		HAL_Delay(3000);
+		dyna_calibrate(&ax);
 }
 //***************************************************************************************************/
 //******************************* IMPLEMENTASI ALGORITMA JALAN **************************************/
