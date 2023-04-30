@@ -78,6 +78,30 @@ huskylens_arrow_t husky_getArrows(void){
 	return handler;
 }
 
+huskylens_block_t husky_getBlocks_obj(void){
+	huskylens_block_t handler;
+	uint8_t reqBlock[] = {0x55, 0xAA, 0x11, 0x00, 0x24, 0x34};
+	HAL_I2C_Master_Transmit(hi2c, HUSKY_ADDR, reqBlock, 6, TIME_TRANSMIT);
+	// Return INFO
+	uint8_t rxBuff[50];
+  HAL_I2C_Master_Receive(hi2c, HUSKY_ADDR, rxBuff, 50, TIME_RECEIVE);
+	memcpy(handler.info.msg, rxBuff, 50);
+	if( rxBuff[4] == 0x29){
+		handler.info.num_block_arr = (rxBuff[6] << 8) | rxBuff[5];
+		handler.info.num_id = (rxBuff[8] << 8) | rxBuff[7];
+		handler.info.current_frame = (rxBuff[10] << 8) | rxBuff[9];
+	}
+	if( rxBuff[20] == 0x2A){
+		handler.X_center = (rxBuff[22] << 8) | rxBuff[21];
+		handler.Y_center = (rxBuff[24] << 8) | rxBuff[23];
+		handler.width = (rxBuff[26] << 8) | rxBuff[25];
+		handler.height = (rxBuff[28] << 8) | rxBuff[27];
+		handler.id = (rxBuff[30] << 8) | rxBuff[29];
+	}
+	
+	return handler;
+}
+
 huskylens_block_t husky_getBlocks(void){
 	huskylens_block_t handler;
 	uint8_t reqBlock[] = {0x55, 0xAA, 0x11, 0x00, 0x21, 0x31};

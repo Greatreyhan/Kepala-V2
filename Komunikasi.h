@@ -54,6 +54,9 @@ typedef enum{
 	AMBIL_KORBAN = 0x01U,
 	PENYELAMATAN_KORBAN = 0x02U,
 	HOME_CAPIT = 0x03U,
+	STEADY_CAPIT = 0x04,
+	START_CAPIT = 0X05,
+	EVAKUASI_CAPIT = 0X06,
 }type_capit_t;
 
 typedef enum{

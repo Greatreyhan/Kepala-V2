@@ -122,6 +122,9 @@ huskylens_arrow_t husky_getArrows(void);
 // Get All Block
 huskylens_block_t husky_getBlocks(void);
 
+// Get ID
+huskylens_block_t husky_getBlocks_obj(void);
+
 // Get All Learned Block
 huskylens_block_t husky_getLearnedBlocks(void);
 
