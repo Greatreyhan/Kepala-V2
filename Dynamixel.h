@@ -35,7 +35,8 @@ typedef enum{
 	KEPALA_DEPAN = 0X01U,
 	KEPALA_KANAN = 0X02U,
 	KEPALA_BELAKANG = 0X03U,
-	KEPALA_KIRI = 0X04U
+	KEPALA_KIRI = 0X04U,
+	KEPALA_KANAN_DEPAN = 0x05U,
 }dynamixel_kepala_direction_t;
 
 void dyna_set_bautrate(dynamixel_t* dyn, uint8_t speed);
