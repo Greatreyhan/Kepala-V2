@@ -104,6 +104,14 @@ huskylens_block_t husky_getBlocks_obj(void){
 
 huskylens_block_t husky_getBlocks(void){
 	huskylens_block_t handler;
+	handler.info.num_block_arr = 0;
+	handler.info.num_id = 0;
+	handler.info.current_frame = 0;
+	handler.X_center = 0;
+	handler.Y_center = 0;
+	handler.width = 0;
+	handler.height = 0;
+	handler.id = 0;
 	uint8_t reqBlock[] = {0x55, 0xAA, 0x11, 0x00, 0x21, 0x31};
 	HAL_I2C_Master_Transmit(hi2c, HUSKY_ADDR, reqBlock, 6, TIME_TRANSMIT);
 	// Return INFO
